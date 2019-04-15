@@ -8,10 +8,10 @@ def get_device():
 def get_cuda_enabled_device_count():
     return getCudaEnabledDeviceCount()
 
-def print_cuda_device_info(int device):
+def print_cuda_device_info(int device=get_device()):
     printCudaDeviceInfo(device)
 
-def print_short_cuda_device_info(int device):
+def print_short_cuda_device_info(int device=get_device()):
     printShortCudaDeviceInfo(device)
 
 def reset_device():
