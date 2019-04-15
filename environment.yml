@@ -1,0 +1,13 @@
+name: flow
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - binutils_linux-64
+  - cython=0.29.6
+  - gcc_linux-64
+  - gxx_linux-64
+  - numpy=1.16.2
+  - pip=19.0.3
+  - python=3.7.3
+  - setuptools=41.0.0
