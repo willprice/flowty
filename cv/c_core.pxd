@@ -1,6 +1,16 @@
 # cython: language_level = 3
 from libcpp cimport bool
 from libcpp.vector cimport vector
+from libcpp.memory cimport shared_ptr
+
+
+cdef extern from "opencv2/imgproc.hpp" namespace "cv":
+    enum ColorConversionCodes:
+        COLOR_BGR2GRAY
+
+    void cvtColor(InputArray, OutputArray, int, int)
+    void cvtColor(InputArray, OutputArray, int)
+
 
 cdef extern from "opencv2/core.hpp":
     cdef enum:
@@ -48,14 +58,7 @@ cdef extern from "opencv2/core.hpp":
         CV_64FC4
 
     unsigned int CV_MAT_DEPTH_MASK
-
-
-cdef extern from "opencv2/imgproc.hpp" namespace "cv":
-    enum ColorConversionCodes:
-        COLOR_BGR2GRAY
-
-    void cvtColor(InputArray, OutputArray, int, int)
-    void cvtColor(InputArray, OutputArray, int)
+    ctypedef shared_ptr Ptr
 
 cdef extern from "opencv2/core.hpp" namespace "cv":
     cdef cppclass MatSize:
@@ -93,6 +96,7 @@ cdef extern from "opencv2/core.hpp" namespace "cv":
         unsigned char* datastart
         unsigned char* dataend
         int cols, rows, flags, dims
+
 
 cdef extern from "opencv2/core/mat.hpp" namespace "cv":
     cdef cppclass InputArray:
