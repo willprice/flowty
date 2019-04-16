@@ -133,7 +133,7 @@ cdef class TvL1OpticalFlow:
     def __repr__(self):
         return (self.__class__.__name__ +
             ("("
-             "tau={tau}, lambda_={lambda_}, epsilon={epsilon}, gamma={gamma}, "
+             "tau={tau}, lambda_={lambda_}, theta={theta}, epsilon={epsilon}, gamma={gamma}, "
              "scale_count={scale_count}, warp_count={warp_count}, outer_iterations={outer_iterations}, "
              "inner_iterations={inner_iterations}, scale_step={scale_step}, median_filtering={median_filtering}, "
              "use_initial_flow={use_initial_flow}"
@@ -141,6 +141,7 @@ cdef class TvL1OpticalFlow:
              ).format(
                 tau=self.tau,
                 lambda_=self.lambda_,
+                theta=self.theta,
                 epsilon=self.epsilon,
                 gamma=self.gamma,
                 scale_count=self.scale_count,

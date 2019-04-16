@@ -8,7 +8,7 @@ cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv":
         void calc(InputArray, InputArray, InputOutputArray flow)
         void collectGarbage()
 
-    cdef cppclass OpticalFlowDual_TVL1:
+    cdef cppclass OpticalFlowDual_TVL1(DenseOpticalFlow):
 
         @staticmethod
         Ptr[OpticalFlowDual_TVL1] create(double, double, double, int, int, double, int, double, double, bool)
