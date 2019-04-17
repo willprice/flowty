@@ -4,6 +4,8 @@ from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 import numpy as np
 import subprocess
+from multiprocessing import cpu_count
+
 
 def get_cli_output(cmd):
     if isinstance(cmd, str):
@@ -25,6 +27,5 @@ setup(
         include_dirs=[np.get_include()],
         extra_compile_args=opencv_cflags,
         extra_link_args=opencv_libs,
-    ))
+    ), nthreads=cpu_count())
 )
-
