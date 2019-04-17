@@ -3,6 +3,7 @@
 from cpython cimport Py_buffer
 from .c_core cimport Mat as c_Mat
 from . cimport c_core
+import numpy as np
 
 CV_8U = c_core.CV_8U
 CV_8S = c_core.CV_8S
@@ -86,6 +87,38 @@ _mat_type_lookup = {
     c_core.CV_64FC4: (8, b'd', 4),
 }
 
+_np_dtype_to_cv_dtype_lookup = {
+     (np.dtype(np.uint8), 1): CV_8UC1,
+     (np.dtype(np.uint8), 2): CV_8UC2,
+     (np.dtype(np.uint8), 3): CV_8UC3,
+     (np.dtype(np.uint8), 4): CV_8UC4,
+
+     (np.dtype(np.uint16), 1): CV_16UC1,
+     (np.dtype(np.uint16), 2): CV_16UC2,
+     (np.dtype(np.uint16), 3): CV_16UC3,
+     (np.dtype(np.uint16), 4): CV_16UC4,
+
+     (np.dtype(np.int16), 1): CV_16SC1,
+     (np.dtype(np.int16), 2): CV_16SC2,
+     (np.dtype(np.int16), 3): CV_16SC3,
+     (np.dtype(np.int16), 4): CV_16SC4,
+
+     (np.dtype(np.int32), 1): CV_32SC1,
+     (np.dtype(np.int32), 2): CV_32SC2,
+     (np.dtype(np.int32), 3): CV_32SC3,
+     (np.dtype(np.int32), 4): CV_32SC4,
+
+     (np.dtype(np.float32), 1): CV_32FC1,
+     (np.dtype(np.float32), 2): CV_32FC2,
+     (np.dtype(np.float32), 3): CV_32FC3,
+     (np.dtype(np.float32), 4): CV_32FC4,
+
+     (np.dtype(np.float64), 1): CV_64FC1,
+     (np.dtype(np.float64), 2): CV_64FC2,
+     (np.dtype(np.float64), 3): CV_64FC3,
+     (np.dtype(np.float64), 4): CV_64FC4,
+}
+
 cdef class Mat:
     def __cinit__(self, int rows=0, int cols=0, int dtype=CV_8UC3):
         self.c_mat = c_Mat(rows, cols, dtype)
@@ -96,6 +129,14 @@ cdef class Mat:
         cdef Mat py_mat = Mat.__new__(Mat)
         py_mat.c_mat = mat
         return py_mat
+
+    @staticmethod
+    def fromarray(array: np.ndarray) -> Mat:
+        if array.ndim not in (2, 3):
+            raise ValueError("Can only create a 2D or 3D Mat, but the array passed was {}D".format(array.ndim))
+        channels = array.shape[2] if array.ndim > 2 else 1
+        dtype = _np_dtype_to_cv_dtype_lookup[array.dtype, channels]
+        return Mat(rows=array.shape[0], cols=array.shape[1], dtype=dtype)
 
     @property
     def rows(self):

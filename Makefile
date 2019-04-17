@@ -29,6 +29,7 @@ singularity_build: $(SINGULARITY_NAME)
 .PHONY: clean
 clean:
 	@rm -rf build dist flowty/cv/*.{cpp,c,so} *.egg-info
+	@rm -rf `find . -iname '__pycache__' -o -iname '*.pyc'` 
 
 .PHONY: check
 check: build
