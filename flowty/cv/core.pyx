@@ -1,15 +1,51 @@
 # cython: language_level=3
 
-from c_core cimport Mat as c_Mat
 from cpython cimport Py_buffer
-cimport c_core
+from .c_core cimport Mat as c_Mat
+from . cimport c_core
+
+CV_8U = c_core.CV_8U
+CV_8S = c_core.CV_8S
+CV_16U = c_core.CV_16U
+CV_16S = c_core.CV_16S
+CV_32S = c_core.CV_32S
+CV_32F = c_core.CV_32F
+CV_64F = c_core.CV_64F
 
 CV_8UC1 = c_core.CV_8UC1
 CV_8UC2 = c_core.CV_8UC2
 CV_8UC3 = c_core.CV_8UC3
+CV_8UC4 = c_core.CV_8UC4
+
+CV_8SC1 = c_core.CV_8SC1
+CV_8SC2 = c_core.CV_8SC2
+CV_8SC3 = c_core.CV_8SC3
+CV_8SC4 = c_core.CV_8SC4
+
+CV_16UC1 = c_core.CV_16UC1
+CV_16UC2 = c_core.CV_16UC2
+CV_16UC3 = c_core.CV_16UC3
+CV_16UC4 = c_core.CV_16UC4
+
+CV_16SC1 = c_core.CV_16SC1
+CV_16SC2 = c_core.CV_16SC2
+CV_16SC3 = c_core.CV_16SC3
+CV_16SC4 = c_core.CV_16SC4
+
+CV_32SC1 = c_core.CV_32SC1
+CV_32SC2 = c_core.CV_32SC2
+CV_32SC3 = c_core.CV_32SC3
+CV_32SC4 = c_core.CV_32SC4
+
 CV_32FC1 = c_core.CV_32FC1
 CV_32FC2 = c_core.CV_32FC2
 CV_32FC3 = c_core.CV_32FC3
+CV_32FC4 = c_core.CV_32FC4
+
+CV_64FC1 = c_core.CV_64FC1
+CV_64FC2 = c_core.CV_64FC2
+CV_64FC3 = c_core.CV_64FC3
+CV_64FC4 = c_core.CV_64FC4
 
 # CV type code -> (byte_count, type_str, channel_count)
 # See type_str details at https://docs.python.org/3/library/struct.html#format-characters
@@ -93,7 +129,7 @@ cdef class Mat:
 
     @property
     def shape(self):
-        return (self.rows, self.cols)
+        return (self.rows, self.cols, self.channels)
 
     def asarray(self):
         import numpy as np
@@ -108,14 +144,10 @@ cdef class Mat:
         self.shape[0] = self.c_mat.rows
         self.shape[1] = self.c_mat.cols
         self.shape[2] = self.c_mat.channels()
-        print(self.c_mat.channels())
 
         self.strides[0] = self.c_mat.step[0]
         self.strides[1] = self.c_mat.step[1]
         self.strides[2] = byte_count
-        print("strides: ", self.c_mat.step[0], self.c_mat.step[1],
-              self.c_mat.step[2])
-
 
         buffer.buf = <char *>(self.c_mat.data)
         buffer.format = type_str
@@ -130,7 +162,13 @@ cdef class Mat:
         buffer.suboffsets = NULL
 
         self.view_count += 1
-        print("end of __getbuffer__")
 
     def __releasebuffer__(self, Py_buffer *buffer):
         self.view_count -= 1
+
+    def __repr__(self):
+        return "Mat(rows={rows}, cols={cols}, dtype={dtype})".format(
+            rows=self.rows,
+            cols=self.cols,
+            dtype=self.dtype
+        )

@@ -1,7 +1,7 @@
 # cython: language_level = 3
-from c_core cimport Mat, OutputArray
 from libcpp cimport bool
 from libcpp.string cimport string
+from .c_core cimport Mat, OutputArray
 
 cdef extern from "opencv2/videoio.hpp" namespace "cv":
     cdef enum:

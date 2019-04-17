@@ -1,10 +1,11 @@
 # cython: language_level=3
-from c_core cimport Mat as c_Mat, OutputArray
-from core cimport Mat
-from core import Mat
-from c_videoio cimport CAP_ANY, VideoCapture
 from libcpp.string cimport string
 from libcpp cimport bool
+
+from .c_core cimport Mat as c_Mat, OutputArray
+from .core cimport Mat
+from .core import Mat
+from .c_videoio cimport CAP_ANY, VideoCapture
 
 
 cdef class VideoSource:

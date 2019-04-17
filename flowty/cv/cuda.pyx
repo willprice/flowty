@@ -1,6 +1,6 @@
 # cython: language_level = 3
 
-from c_cuda cimport getDevice, getCudaEnabledDeviceCount, printCudaDeviceInfo, printShortCudaDeviceInfo, resetDevice, setDevice
+from .c_cuda cimport getDevice, getCudaEnabledDeviceCount, printCudaDeviceInfo, printShortCudaDeviceInfo, resetDevice, setDevice
 
 def get_device():
     return getDevice()

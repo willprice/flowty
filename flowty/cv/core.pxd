@@ -1,6 +1,6 @@
 # cython: language_level=3
 
-from c_core cimport Mat as c_Mat
+from .c_core cimport Mat as c_Mat
 
 cdef class Mat:
     cdef:

@@ -1,7 +1,7 @@
 # cython: language_level = 3
 from libcpp cimport bool
 from libcpp.memory cimport shared_ptr
-from c_core cimport Mat, InputArray, InputOutputArray
+from .c_core cimport Mat, InputArray, InputOutputArray
 
 
 cdef extern from "opencv2/video/tracking.hpp" namespace "cv":

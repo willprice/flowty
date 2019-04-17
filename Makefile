@@ -12,9 +12,8 @@ all: build singularity
 build: $(SRC)
 	CC=clang python setup.py build_ext --inplace
 
-.PHONY: test
-test: build
-	PYTHONPATH=. pytest tests
+install:
+
 
 .PHONY: build
 docker_build:
@@ -29,6 +28,16 @@ singularity_build: $(SINGULARITY_NAME)
 
 .PHONY: clean
 clean:
-	@rm -rf build cv/*.{cpp,c}
+	@rm -rf build dist flowty/cv/*.{cpp,c,so} *.egg-info
+
+.PHONY: check
+check: build
+	pytest tests
+
+.PHONY: test
+test: check
+
+
 $(SINGULARITY_NAME):
 	singularity build $@ Singularity
+

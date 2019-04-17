@@ -1,7 +1,7 @@
 # cython: language_level = 3
 from libcpp cimport bool
 from libcpp.vector cimport vector
-from c_core cimport InputArray, OutputArray
+from .c_core cimport InputArray, OutputArray
 
 cdef extern from "opencv2/core/cuda.hpp" namespace "cv::cuda":
     int getDevice() except +

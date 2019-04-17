@@ -1,13 +1,13 @@
 # cython: language_level = 3
 
 from libcpp cimport bool
-from c_cuda_optflow cimport OpticalFlowDual_TVL1
-from core import Mat
-from core cimport Mat
-from c_core cimport Mat as c_Mat
-from c_core cimport InputArray, OutputArray, InputOutputArray, cvtColor, ColorConversionCodes, Ptr, CV_32FC2
-from c_cuda cimport GpuMat as c_GpuMat
 from cython.operator cimport dereference as deref
+from .c_cuda_optflow cimport OpticalFlowDual_TVL1
+from .core import Mat
+from .core cimport Mat
+from .c_core cimport Mat as c_Mat
+from .c_core cimport InputArray, OutputArray, InputOutputArray, cvtColor, ColorConversionCodes, Ptr, CV_32FC2
+from .c_cuda cimport GpuMat as c_GpuMat
 
 
 cdef class CudaTvL1OpticalFlow:

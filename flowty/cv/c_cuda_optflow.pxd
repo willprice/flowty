@@ -1,9 +1,9 @@
 from libcpp cimport bool
 from libcpp.vector cimport vector
-from c_core cimport Ptr, InputArray, InputOutputArray
+from .c_core cimport Ptr, InputArray, InputOutputArray
 
 
-cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv":
+cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv::cuda":
     cdef cppclass DenseOpticalFlow:
         void calc(InputArray, InputArray, InputOutputArray flow)
         void collectGarbage()
