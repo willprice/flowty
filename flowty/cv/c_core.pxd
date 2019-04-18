@@ -61,6 +61,15 @@ cdef extern from "opencv2/core.hpp":
     ctypedef shared_ptr Ptr
 
 cdef extern from "opencv2/core.hpp" namespace "cv":
+    cdef cppclass Size:
+        Size()
+        Size(int, int)
+        Size(Size&)
+        int area()
+        double aspectRatio()
+        bool empty()
+        Size& operator=(Size&)
+
     cdef cppclass MatSize:
         MatSize(int *)
         int dims()
