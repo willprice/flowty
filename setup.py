@@ -4,6 +4,7 @@ from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 import subprocess
 import os
+import numpy as np
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -32,10 +33,13 @@ def cython_extension(
     extra_compile_args=None,
     extra_link_args=None,
 ):
+    if include_dirs is None:
+        include_dirs = []
     return Extension(
         pyx_file[: -len(".pyx")].replace("/", "."),
         sources=[pyx_file],
         language="c++",
+        include_dirs=[np.get_include(), *include_dirs],
         extra_compile_args=opencv_cflags,
         extra_link_args=opencv_libs,
     )
@@ -47,6 +51,7 @@ extensions = [
         "flowty/cv/core.pyx",
         "flowty/cv/videoio.pyx",
         "flowty/cv/optflow.pyx",
+        "flowty/cv/imgcodecs.pyx",
         "flowty/cv/cuda.pyx",
         "flowty/cv/cuda_optflow.pyx",
         "flowty/cv/cuda_optflow.pyx",
