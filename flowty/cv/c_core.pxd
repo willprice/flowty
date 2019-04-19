@@ -4,14 +4,6 @@ from libcpp.vector cimport vector
 from libcpp.memory cimport shared_ptr
 
 
-cdef extern from "opencv2/imgproc.hpp" namespace "cv":
-    enum ColorConversionCodes:
-        COLOR_BGR2GRAY
-
-    void cvtColor(InputArray, OutputArray, int, int)
-    void cvtColor(InputArray, OutputArray, int)
-
-
 cdef extern from "opencv2/core.hpp":
     cdef enum:
         CV_8U
