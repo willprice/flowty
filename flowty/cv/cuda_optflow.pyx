@@ -6,7 +6,8 @@ from .c_cuda_optflow cimport OpticalFlowDual_TVL1
 from .core import Mat
 from .core cimport Mat
 from .c_core cimport Mat as c_Mat
-from .c_core cimport InputArray, OutputArray, InputOutputArray, cvtColor, ColorConversionCodes, Ptr, CV_32FC2
+from .c_core cimport InputArray, OutputArray, InputOutputArray, Ptr, CV_32FC2
+from .c_imgproc cimport cvtColor, ColorConversionCodes
 from .c_cuda cimport GpuMat as c_GpuMat
 
 
