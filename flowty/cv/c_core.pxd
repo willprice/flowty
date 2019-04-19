@@ -88,6 +88,8 @@ cdef extern from "opencv2/core.hpp" namespace "cv":
     cdef cppclass Mat:
         Mat() except +
         Mat(int, int, int) except +
+        Mat(int, int, int, void*) except +
+        Mat(int, int, int, void*, size_t) except +
 
         void create(int, int, int) except +
         bool empty()

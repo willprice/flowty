@@ -1,5 +1,6 @@
 import numpy as np
 from flowty.cv.core import Mat, CV_64F, CV_8U, CV_8UC2, CV_8UC3, CV_32FC2, CV_32FC3, CV_64FC3
+from numpy.testing import assert_equal
 
 
 class TestMat:
@@ -67,6 +68,17 @@ class TestMat:
         assert array.dtype == np.float32
         assert array.shape == (1, 2, 2)
         del array
+
+    def test_fromarray_maintains_shape(self):
+        array = np.zeros((5, 10, 3), dtype=np.uint8)
+        mat = Mat.fromarray(array)
+        assert (5, 10, 3) == mat.shape
+
+    def test_fromarray_preserves_data(self):
+        array = np.random.randint(0, 255, size=(4, 5, 3), dtype=np.uint8)
+        mat = Mat.fromarray(array)
+        mat_as_array = mat.asarray()
+        assert_equal(array, mat_as_array)
 
     def test_setting_value_in_buffer(self):
         mat = Mat(rows=1, cols=2, dtype=CV_32FC3)

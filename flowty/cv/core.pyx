@@ -4,6 +4,8 @@ from cpython cimport Py_buffer
 from .c_core cimport Mat as c_Mat
 from . cimport c_core
 import numpy as np
+cimport numpy as np
+np.import_array()
 
 CV_8U = c_core.CV_8U
 CV_8S = c_core.CV_8S
@@ -131,12 +133,16 @@ cdef class Mat:
         return py_mat
 
     @staticmethod
-    def fromarray(array: np.ndarray) -> Mat:
+    def fromarray(np.ndarray array not None) -> Mat:
         if array.ndim not in (2, 3):
             raise ValueError("Can only create a 2D or 3D Mat, but the array passed was {}D".format(array.ndim))
         channels = array.shape[2] if array.ndim > 2 else 1
         dtype = _np_dtype_to_cv_dtype_lookup[array.dtype, channels]
-        return Mat(rows=array.shape[0], cols=array.shape[1], dtype=dtype)
+        if not array.flags['C_CONTIGUOUS']:
+            array = np.ascontiguousarray(array)
+        cdef void* data = <void*> array.data
+        cdef c_Mat c_mat = c_Mat(array.shape[0], array.shape[1], dtype, data)
+        return Mat.from_mat(c_mat)
 
     @property
     def rows(self):
