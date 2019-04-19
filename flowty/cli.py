@@ -1,4 +1,8 @@
-from flow2 import Mat, VideoSource, VideoSink, DenseOpticalFlow, DualTVL1OpticalFlow, mat_to_np, np_to_mat, quantise_float_mat
+from flowty.cv.core import Mat
+from flowty.cv.videoio import VideoSource
+from flowty.cv.optflow import TvL1OpticalFlow
+from flowty.imgproc import quantise_flow
+from flowty.videoio import FlowImageWriter
 import argparse
 from pathlib import Path
 from collections import deque
@@ -34,11 +38,17 @@ parser.add_argument('--tvl1-use-initial-flow', action='store_true')
 
 
 class FlowPipe:
-    def __init__(self, src, flow_algorithm, input_transforms, output_transforms, dest, stride=1, dilation=1):
+    def __init__(self,
+                 src,
+                 flow_algorithm,
+                 dest,
+                 input_transforms=None,
+                 output_transforms=None,
+                 stride=1, dilation=1):
         self.src = src
         self.flow_algorithm = flow_algorithm
-        self.input_transforms = input_transforms
-        self.output_transforms = output_transforms
+        self.input_transforms = input_transforms if input_transforms is not None else []
+        self.output_transforms = output_transforms if output_transforms is not None else []
         self.dest = dest
         self.stride = stride
         self.dilation = dilation
@@ -53,55 +63,52 @@ class FlowPipe:
         for i, target in enumerate(frame_iter):
             reference = frame_queue.popleft()
             frame_queue.appendleft(target)
-            assert len(frame_queue) == self.dilation - 1
+            assert len(frame_queue) == self.dilation
             if i % self.stride == 0:
                 flow = self.flow_algorithm(reference, target)
                 self.write_flow(flow)
 
-    def read_frame(self):
-        frame = self.src.read_frame()
-        for transform in self.input_transforms:
-            frame = transform(frame)
-        return frame
-
     def write_flow(self, flow):
         for transform in self.output_transforms:
             flow = transform(flow)
-        self.dest.write_frame(flow)
+        self.dest.write(flow)
 
 
-def make_flow_algorithm(args) -> DenseOpticalFlow:
+def make_flow_algorithm(args):
     if args.algorithm.lower() == 'tvl1':
-        return DualTVL1OpticalFlow(
+        return TvL1OpticalFlow(
             tau=args.tvl1_tau,
             lambda_=args.tvl1_lambda,
             theta=args.tvl1_theta,
             epsilon=args.tvl1_epsilon,
             gamma=args.tvl1_gamma,
             scale_count=args.tvl1_scale_count,
-            warp_count=args.tvl1_warps,
+            warp_count=args.tvl1_warp_count,
             inner_iterations=args.tvl1_inner_iterations,
             outer_iterations=args.tvl1_outer_iterations,
             scale_step=args.tvl1_scale_step,
             median_filtering=args.tvl1_median_filtering,
-            use_initial_flow=args.use_initial_flow,
+            use_initial_flow=args.tvl1_use_initial_flow,
         )
     else:
         raise NotImplementedError(args.algorithm + " not implemented yet")
 
 
-def flow_to_uv_pair(flow: Mat):
-    array = mat_to_np(flow)
-    array
+def mat_to_array(mat):
+    return mat.asarray()
+
+
+def array_to_mat(array):
+    return Mat.fromarray(array)
 
 
 def main(args):
     video_src = VideoSource(str(args.src.absolute()))
-    video_sink = VideoSink(str(args.dest.absolute()))
+    video_sink = FlowImageWriter(str(args.dest))
     flow_algorithm = make_flow_algorithm(args)
-    flow_quantisation = quantise_float_mat(bound=args.bound, min=0, max=255)
     pipeline = FlowPipe(
-        video_src, [], flow_algorithm, [flow_to_uv_pair, flow_quantisation], video_sink,
+        video_src, flow_algorithm, video_sink,
+        output_transforms=[mat_to_array, quantise_flow],
         stride=args.video_stride,
         dilation=args.video_dilation
     )
