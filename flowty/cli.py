@@ -102,7 +102,9 @@ def array_to_mat(array):
     return Mat.fromarray(array)
 
 
-def main(args):
+def main(args=None):
+    if args is None:
+        args = parser.parse_args()
     video_src = VideoSource(str(args.src.absolute()))
     video_sink = FlowImageWriter(str(args.dest))
     flow_algorithm = make_flow_algorithm(args)
@@ -116,4 +118,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main(parser.parse_args())
+    main()

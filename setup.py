@@ -35,18 +35,22 @@ def cython_extension(
 ):
     if include_dirs is None:
         include_dirs = []
+    if extra_compile_args is None:
+        extra_compile_args = []
+    if extra_link_args is None:
+        extra_link_args = []
     return Extension(
         pyx_file[: -len(".pyx")].replace("/", "."),
         sources=[pyx_file],
         language="c++",
         include_dirs=[np.get_include(), *include_dirs],
-        extra_compile_args=opencv_cflags,
-        extra_link_args=opencv_libs,
+        extra_compile_args=opencv_cflags + extra_compile_args,
+        extra_link_args=opencv_libs + extra_link_args,
     )
 
 
 extensions = [
-    cython_extension(path)
+    cython_extension(path, extra_compile_args=['-std=c++11'])
     for path in [
         "flowty/cv/core.pyx",
         "flowty/cv/videoio.pyx",
@@ -64,7 +68,10 @@ setup(
     version=about["__version__"],
     cmdclass={"build_ext": build_ext},
     ext_modules=cythonize(extensions),
+    packages=['flowty'],
     install_requires=["numpy"],
+    # Include package data specified in MANIFEST.in
+    include_package_data=True,
     classifiers=[
         # How mature is this project? Common values
         # are
@@ -77,6 +84,9 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
+    entry_points = {
+        'console_scripts': ['flowty=flowty.cli:main']
+    },
     keywords=[
         "computer-vision",
         "optical-flow",
