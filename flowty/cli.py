@@ -3,9 +3,12 @@ from flowty.cv.videoio import VideoSource
 from flowty.cv.optflow import TvL1OpticalFlow
 from flowty.imgproc import quantise_flow
 from flowty.videoio import FlowImageWriter
+from flowty.cv.cuda import get_cuda_enabled_device_count
+from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow
 import argparse
 from pathlib import Path
 from collections import deque
+import time
 
 parser = argparse.ArgumentParser(
     description='Compute optical flow',
@@ -60,13 +63,24 @@ class FlowPipe:
             frame_queue.appendleft(next(frame_iter))
         assert len(frame_queue) == self.dilation
 
+        t = time.time()
         for i, target in enumerate(frame_iter):
+            data_load_time = time.time() - t
+            print("Data time (ms): ", data_load_time * 1e3)
             reference = frame_queue.popleft()
             frame_queue.appendleft(target)
             assert len(frame_queue) == self.dilation
             if i % self.stride == 0:
+                t = time.time()
                 flow = self.flow_algorithm(reference, target)
+                flow_time = (time.time() - t) * 1e3
+                print("Flow time (ms): ", flow_time)
+
+                t = time.time()
                 self.write_flow(flow)
+                write_time = (time.time() - t) * 1e3
+                print("Write time (ms): ", write_time)
+            t = time.time()
 
     def write_flow(self, flow):
         for transform in self.output_transforms:
@@ -76,20 +90,34 @@ class FlowPipe:
 
 def make_flow_algorithm(args):
     if args.algorithm.lower() == 'tvl1':
-        return TvL1OpticalFlow(
-            tau=args.tvl1_tau,
-            lambda_=args.tvl1_lambda,
-            theta=args.tvl1_theta,
-            epsilon=args.tvl1_epsilon,
-            gamma=args.tvl1_gamma,
-            scale_count=args.tvl1_scale_count,
-            warp_count=args.tvl1_warp_count,
-            inner_iterations=args.tvl1_inner_iterations,
-            outer_iterations=args.tvl1_outer_iterations,
-            scale_step=args.tvl1_scale_step,
-            median_filtering=args.tvl1_median_filtering,
-            use_initial_flow=args.tvl1_use_initial_flow,
-        )
+        if args.cuda:
+            return CudaTvL1OpticalFlow(
+                tau=args.tvl1_tau,
+                lambda_=args.tvl1_lambda,
+                theta=args.tvl1_theta,
+                epsilon=args.tvl1_epsilon,
+                gamma=args.tvl1_gamma,
+                scale_count=args.tvl1_scale_count,
+                warp_count=args.tvl1_warp_count,
+                iterations=args.tvl1_outer_iterations * args.tvl1_inner_iterations,
+                scale_step=args.tvl1_scale_step,
+                use_initial_flow=args.tvl1_use_initial_flow,
+            )
+        else:
+            return TvL1OpticalFlow(
+                tau=args.tvl1_tau,
+                lambda_=args.tvl1_lambda,
+                theta=args.tvl1_theta,
+                epsilon=args.tvl1_epsilon,
+                gamma=args.tvl1_gamma,
+                scale_count=args.tvl1_scale_count,
+                warp_count=args.tvl1_warp_count,
+                inner_iterations=args.tvl1_inner_iterations,
+                outer_iterations=args.tvl1_outer_iterations,
+                scale_step=args.tvl1_scale_step,
+                median_filtering=args.tvl1_median_filtering,
+                use_initial_flow=args.tvl1_use_initial_flow,
+            )
     else:
         raise NotImplementedError(args.algorithm + " not implemented yet")
 
@@ -105,6 +133,9 @@ def array_to_mat(array):
 def main(args=None):
     if args is None:
         args = parser.parse_args()
+    if args.cuda:
+        if get_cuda_enabled_device_count() < 1:
+            raise RuntimeError("No CUDA devices available")
     video_src = VideoSource(str(args.src.absolute()))
     video_sink = FlowImageWriter(str(args.dest))
     flow_algorithm = make_flow_algorithm(args)

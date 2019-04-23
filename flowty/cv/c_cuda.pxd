@@ -4,29 +4,29 @@ from libcpp.vector cimport vector
 from .c_core cimport InputArray, OutputArray
 
 cdef extern from "opencv2/core/cuda.hpp" namespace "cv::cuda":
-    int getDevice() except +
-    int getCudaEnabledDeviceCount() except +
-    void printCudaDeviceInfo(int) except +
-    void printShortCudaDeviceInfo(int) except +
-    void resetDevice() except +
-    void setDevice(int) except +
+    int getDevice() nogil except +
+    int getCudaEnabledDeviceCount() nogil except +
+    void printCudaDeviceInfo(int) nogil except +
+    void printShortCudaDeviceInfo(int) nogil except +
+    void resetDevice() nogil except +
+    void setDevice(int) nogil except +
 
     cdef cppclass GpuMat:
-        GpuMat() except +
-        GpuMat(int, int, int) except +
-        GpuMat(InputArray) except +
+        GpuMat() nogil except +
+        GpuMat(int, int, int) nogil except +
+        GpuMat(InputArray) nogil except +
 
         bool empty()
         int type()
-        GpuMat clone()
+        GpuMat clone() except +
         int depth()
         int channels()
         size_t elemSize()
         size_t elemSize1()
         T at[T](int, int)
 
-        void download(OutputArray) except +
-        void upload(InputArray) except +
+        void download(OutputArray) nogil except +
+        void upload(InputArray) nogil except +
 
         unsigned char* data
         size_t step

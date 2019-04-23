@@ -78,20 +78,20 @@ cdef extern from "opencv2/core.hpp" namespace "cv":
         size_t* p
 
     cdef cppclass Mat:
-        Mat() except +
-        Mat(int, int, int) except +
-        Mat(int, int, int, void*) except +
-        Mat(int, int, int, void*, size_t) except +
+        Mat() nogil except +
+        Mat(int, int, int) nogil except +
+        Mat(int, int, int, void*) nogil except +
+        Mat(int, int, int, void*, size_t) nogil except +
 
-        void create(int, int, int) except +
-        bool empty()
-        int type()
-        Mat clone()
-        int depth()
-        int channels()
-        size_t elemSize()
-        size_t elemSize1()
-        T at[T](int, int)
+        void create(int, int, int) nogil except +
+        bool empty() nogil
+        int type() nogil
+        Mat clone() nogil
+        int depth() nogil
+        int channels() nogil
+        size_t elemSize() nogil
+        size_t elemSize1() nogil
+        T at[T](int, int) nogil
 
         void* data
         MatSize size
@@ -103,16 +103,16 @@ cdef extern from "opencv2/core.hpp" namespace "cv":
 
 cdef extern from "opencv2/core/mat.hpp" namespace "cv":
     cdef cppclass InputArray:
-        InputArray()
-        InputArray(int, void*)
-        InputArray(const Mat&)
-        InputArray(vector[Mat] &)
+        InputArray() nogil
+        InputArray(int, void*) nogil
+        InputArray(const Mat&) nogil
+        InputArray(vector[Mat] &) nogil
 
     cdef cppclass OutputArray:
-        OutputArray()
-        OutputArray(int, void*)
-        OutputArray(const Mat&)
-        OutputArray(vector[Mat] &)
+        OutputArray() nogil
+        OutputArray(int, void*) nogil
+        OutputArray(const Mat&) nogil
+        OutputArray(vector[Mat] &) nogil
 
     cdef cppclass InputOutputArray:
         InputOutputArray()

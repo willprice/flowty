@@ -44,7 +44,7 @@ class TestCudaTvL1OpticalFlow:
         assert CudaTvL1OpticalFlow().warp_count == 5
 
     def test_iterations_property(self):
-        assert CudaTvL1OpticalFlow().outer_iterations == 300
+        assert CudaTvL1OpticalFlow().iterations == 300
 
     def test_use_initial_flow_property(self):
         assert not CudaTvL1OpticalFlow().use_initial_flow
@@ -59,7 +59,7 @@ class TestCudaTvL1OpticalFlow:
         assert flow.shape[:2] == target.shape[:2]
         assert flow.shape[2] == 2
         assert flow.dtype == CV_32FC2
-
+ 
     def test_input_frames_arent_modified(self):
         alg = CudaTvL1OpticalFlow()
         reference = make_random_uint8_mat(10, 20, 3)

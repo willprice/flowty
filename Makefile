@@ -2,7 +2,7 @@ SHELL := bash
 BASE_NAME := flowty
 CONTAINER_NAME := willprice/$(BASE_NAME)
 SINGULARITY_NAME := $(BASE_NAME).simg
-TAG := cuda-10.1-cudnn7
+TAG := latest
 SRC := $(shell find . -iregex '.*\.(pyx|pxd|py)')
 PYTHON := python3
 

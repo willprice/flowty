@@ -24,16 +24,14 @@ environment, for this reason, we recommend use our precompiled docker images
 $ ls /path/to/media
 video.mp4
 
-$ docker run \
-  --runtime=nvidia \
-  willprice/flowty --help
+$ docker run --runtime=nvidia willprice/flowty
 
 [Flowty help description]
 
-$ docker run \
-  --mount type=bind,source=/path/to/media,target=/data \
+$ docker run -it --rm \
   --runtime=nvidia \
-  willprice/flowty /data/video.mp4 /data/flow.mp4
+  --mount type=bind,source=/path/to/media,target=/data \
+  willprice/flowty /data/video.mp4 /data/flow/{axis}/{index:05d}.jpg
 ```
 
 ## Contributing

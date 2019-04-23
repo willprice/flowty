@@ -5,3 +5,5 @@ dist
 sdist
 *.egg-info
 Dockerfile
+*.pyc
+__pycache__

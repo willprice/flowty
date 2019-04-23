@@ -13,8 +13,8 @@ from .c_cuda cimport GpuMat as c_GpuMat
 
 cdef class CudaTvL1OpticalFlow:
     cdef Ptr[OpticalFlowDual_TVL1] alg
-    cdef c_GpuMat reference, target, gpu_flow
-    cdef c_Mat flow
+    cdef c_GpuMat reference_gpu, target_gpu, flow_gpu
+    cdef c_Mat reference, target, flow
 
     def __cinit__(self,
                   double tau=0.25,
@@ -37,12 +37,15 @@ cdef class CudaTvL1OpticalFlow:
         cvtColor(<InputArray>target.c_mat,
                  <OutputArray>self.target,
                  ColorConversionCodes.COLOR_BGR2GRAY)
-        if self.flow.empty():
-             self.gpu_flow = c_GpuMat(reference.rows, reference.cols, CV_32FC2)
-        deref(self.alg).calc(<InputArray>self.reference,
-                             <InputArray>self.target,
-                             <InputOutputArray>self.gpu_flow)
-        self.gpu_flow.download(<OutputArray> self.flow)
+        if self.flow_gpu.empty():
+             self.flow_gpu = c_GpuMat(reference.rows, reference.cols, CV_32FC2)
+        with nogil:
+            self.target_gpu.upload(<InputArray> self.target)
+            self.reference_gpu.upload(<InputArray> self.reference)
+            deref(self.alg).calc(<InputArray>self.reference_gpu,
+                                 <InputArray>self.target_gpu,
+                                 <InputOutputArray>self.flow_gpu)
+            self.flow_gpu.download(<OutputArray> self.flow)
         return Mat.from_mat(self.flow)
 
     @property
