@@ -144,4 +144,6 @@ venv.bak/
 
 
 # Cython generated files
-flowty/cv/*.cpp
+src/flowty/cv/*.cpp
+
+.idea

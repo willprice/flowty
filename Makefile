@@ -21,12 +21,16 @@ install:
 venv: .venv
 .venv:
 	$(PYTHON) -m venv .venv
-	$(PYTHON) -m pip install -r dev-requirements.txt
+	$(PYTHON) -m pip install -e ".[dev]"
 
 .PHONY: check test
 test: check
 check: build
 	pytest tests
+
+.PHONY: docs
+docs: 
+	$(MAKE) -C docs html
 
 .PHONY: build
 docker_build:
@@ -44,5 +48,5 @@ $(SINGULARITY_NAME):
 
 .PHONY: clean
 clean:
-	@rm -rf build dist flowty/cv/*.{cpp,c,so} *.egg-info
+	@rm -rf build dist src/flowty/cv/*.{cpp,c,so} *.egg-info
 	@rm -rf `find . -iname '__pycache__' -o -iname '*.pyc'` 

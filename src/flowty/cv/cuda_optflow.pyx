@@ -3,7 +3,6 @@
 from libcpp cimport bool
 from cython.operator cimport dereference as deref
 from .c_cuda_optflow cimport OpticalFlowDual_TVL1
-from .core import Mat
 from .core cimport Mat
 from .c_core cimport Mat as c_Mat
 from .c_core cimport InputArray, OutputArray, InputOutputArray, Ptr, CV_32FC2
@@ -38,7 +37,9 @@ cdef class CudaTvL1OpticalFlow:
                  <OutputArray>self.target,
                  ColorConversionCodes.COLOR_BGR2GRAY)
         if self.flow_gpu.empty():
-             self.flow_gpu = c_GpuMat(reference.rows, reference.cols, CV_32FC2)
+             self.flow_gpu = c_GpuMat(self.reference.rows,
+                                      self.reference.cols,
+                                      CV_32FC2)
         with nogil:
             self.target_gpu.upload(<InputArray> self.target)
             self.reference_gpu.upload(<InputArray> self.reference)
@@ -124,10 +125,8 @@ cdef class CudaTvL1OpticalFlow:
                 gamma=self.gamma,
                 scale_count=self.scale_count,
                 warp_count=self.warp_count,
-                outer_iterations=self.outer_iterations,
-                inner_iterations=self.inner_iterations,
+                iterations=self.iterations,
                 scale_step=self.scale_step,
-                median_filtering=self.median_filtering,
                 use_initial_flow=self.use_initial_flow
             ))
 

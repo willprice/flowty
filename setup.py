@@ -1,7 +1,5 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.extension import Extension
-from Cython.Build import cythonize
-from Cython.Distutils import build_ext
 import subprocess
 import os
 import numpy as np
@@ -10,7 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 
 about = {}
-with open(os.path.join(here, "flowty", "__version__.py"), "r") as f:
+with open(os.path.join(here, "src", "flowty", "__version__.py"), "r") as f:
     exec(f.read(), about)
 
 
@@ -40,7 +38,7 @@ def cython_extension(
     if extra_link_args is None:
         extra_link_args = []
     return Extension(
-        pyx_file[: -len(".pyx")].replace("/", "."),
+        pyx_file[len("src/"):-len(".pyx")].replace("/", "."),
         sources=[pyx_file],
         language="c++",
         include_dirs=[np.get_include(), *include_dirs],
@@ -52,24 +50,32 @@ def cython_extension(
 extensions = [
     cython_extension(path, extra_compile_args=['-std=c++11'])
     for path in [
-        "flowty/cv/core.pyx",
-        "flowty/cv/videoio.pyx",
-        "flowty/cv/optflow.pyx",
-        "flowty/cv/imgcodecs.pyx",
-        "flowty/cv/cuda.pyx",
-        "flowty/cv/cuda_optflow.pyx",
-        "flowty/cv/cuda_optflow.pyx",
+        "src/flowty/cv/core.pyx",
+        "src/flowty/cv/videoio.pyx",
+        "src/flowty/cv/optflow.pyx",
+        "src/flowty/cv/imgcodecs.pyx",
+        "src/flowty/cv/cuda.pyx",
+        "src/flowty/cv/cuda_optflow.pyx",
+        "src/flowty/cv/cuda_optflow.pyx",
     ]
 ]
+
+docs_require = ["sphinx"]
+tests_require = ["pytest"]
 
 setup(
     name=about["__title__"],
     description=about["__description__"],
     version=about["__version__"],
-    cmdclass={"build_ext": build_ext},
-    ext_modules=cythonize(extensions),
-    packages=['flowty'],
+    ext_modules=extensions,
+    packages=find_packages('src') + ['flowty.methods'],
+    package_dir={'': 'src'},
     install_requires=["numpy"],
+    extras_require={
+        "docs": docs_require,
+        "test": tests_require,
+        "dev": tests_require + docs_require,
+    },
     # Include package data specified in MANIFEST.in
     include_package_data=True,
     classifiers=[
@@ -84,7 +90,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    entry_points = {
+    entry_points={
         'console_scripts': ['flowty=flowty.cli:main']
     },
     keywords=[

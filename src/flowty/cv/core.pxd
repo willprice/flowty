@@ -11,3 +11,4 @@ cdef class Mat:
 
     @staticmethod
     cdef Mat from_mat(c_Mat mat)
+
