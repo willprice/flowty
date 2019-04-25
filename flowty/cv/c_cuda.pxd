@@ -35,3 +35,8 @@ cdef extern from "opencv2/core/cuda.hpp" namespace "cv::cuda":
         int* refcount
         int cols, rows, flags
 
+
+    cdef cppclass Stream:
+        Stream() nogil except +
+        bool queryIfComplete() nogil
+        void waitForCompletion() nogil

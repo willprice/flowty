@@ -7,7 +7,7 @@ class FlowImageWriter:
         self.file_path_template = file_path_template
         self.frame_index = 1
 
-    def __call__(self, flow: np.ndarray):
+    def __call__(self, flow: np.ndarray, index=None):
         if flow.ndim != 3:
             raise ValueError("Expected flow to be 3D, but was {}D".format(flow.ndim))
         if flow.shape[2] != 2:
@@ -20,7 +20,7 @@ class FlowImageWriter:
         )
         v_img_path = self.file_path_template.format(
             axis='v',
-            index=self.frame_index
+            index=index if index is not None else self.frame_index
         )
         for dest in [u_img_path, v_img_path]:
             Path(dest).parent.mkdir(exist_ok=True, parents=True)
@@ -29,5 +29,5 @@ class FlowImageWriter:
 
         self.frame_index += 1
 
-    def write(self, flow: np.ndarray):
-        return self(flow)
+    def write(self, flow: np.ndarray, index=None):
+        return self(flow, index=index)
