@@ -3,10 +3,11 @@
 from cython.operator cimport dereference as deref
 from libcpp cimport bool
 from libcpp.memory cimport shared_ptr
-from .c_core cimport Mat as c_Mat, InputArray, OutputArray, InputOutputArray, CV_32FC2
-from .c_imgproc cimport cvtColor, ColorConversionCodes
-from .core cimport Mat
-from .c_optflow cimport DualTVL1OpticalFlow as c_DualTVL1OpticalFlow
+from ..cv.c_core cimport Mat as c_Mat, InputArray, OutputArray, \
+    InputOutputArray, CV_32FC2
+from ..cv.c_imgproc cimport cvtColor, ColorConversionCodes
+from ..cv.core cimport Mat
+from ..cv.c_optflow cimport DualTVL1OpticalFlow as c_DualTVL1OpticalFlow
 
 cdef class TvL1OpticalFlow:
     """
