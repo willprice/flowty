@@ -10,4 +10,6 @@ jobs:
           command: make build
       - run:
           name: Test
-          command: make test
+          command: |
+            pip install -e .[test]
+            make test
