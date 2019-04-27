@@ -11,5 +11,5 @@ jobs:
       - run:
           name: Test
           command: |
-            pip install -e .[test]
+            python3 -m pip install -e .[test]
             make test
