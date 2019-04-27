@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: willprice/opencv4
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: make build
+      - run:
+          name: Test
+          command: make test
