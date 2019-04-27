@@ -8,4 +8,7 @@ def mat_to_array(mat):
 
 def array_to_mat(array):
     """Convert np.ndarray to OpenCV Mat"""
-    return Mat.fromarray(array)
+
+    # We copy the data as when the np.ndarray goes out of scope it's data will be
+    # released and we can't take ownership any other way :(
+    return Mat.fromarray(array, copy=True)

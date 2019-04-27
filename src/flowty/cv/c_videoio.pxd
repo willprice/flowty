@@ -3,7 +3,7 @@ from libcpp cimport bool
 from libcpp.string cimport string
 from .c_core cimport Mat, OutputArray, Size
 
-cdef extern from "opencv2/videoio.hpp" namespace "cv":
+cdef extern from "opencv2/videoio.hpp" namespace "cv" nogil:
     cdef enum VideoCaptureAPIs:
         CAP_ANY
         CAP_V4L
@@ -82,7 +82,7 @@ cdef extern from "opencv2/videoio.hpp" namespace "cv":
         VIDEOWRITER_PROP_FRAMEBYTES
         VIDEOWRITER_PROP_PROP_NSTRIPES
 
-cdef extern from "opencv2/videoio.hpp" namespace "cv":
+cdef extern from "opencv2/videoio.hpp" namespace "cv" nogil:
     cdef cppclass VideoCapture:
         VideoCapture() except +
         VideoCapture(const string&, int) except +

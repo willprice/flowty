@@ -1,4 +1,6 @@
 # cython: language_level=3
+from typing import Iterator, Optional
+
 from libcpp.string cimport string
 from libcpp cimport bool
 
@@ -46,26 +48,27 @@ cdef class VideoSource:
         file_path (str): Path to video.
         backend (str): Backend to use to decode video.
     """
-    cdef VideoCapture c_cap
+    cdef:
+        VideoCapture c_cap
 
     def __cinit__(self, str file_path, str backend = "ffmpeg"):
         cdef string cpp_file_path = file_path.encode('UTF-8')
         cdef int backend_enum = _backend_lookup[backend.lower()]
         self.c_cap = VideoCapture(cpp_file_path, backend_enum)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Mat]:
         return self
 
-    def __next__(self):
-        cdef c_Mat frame
-        cdef bool read = self.c_cap.read(<OutputArray>frame)
+    def __next__(self) -> Mat:
+        cdef Mat frame = Mat()
+        cdef bool read = self.c_cap.read(<OutputArray> frame.c_mat)
         if not read:
             raise StopIteration()
-        return Mat.from_mat(frame)
+        return frame
 
-    cpdef open(self, file_path, backend=None):
+    cpdef void open(self, file_path: str, backend: Optional[str] = None):
         cdef string cpp_file_path = file_path.encode('UTF-8')
-        if backend == None:
+        if backend is None:
             backend = self.backend
         cdef int backend_enum = backend
         self.c_cap.open(cpp_file_path, backend_enum)

@@ -42,6 +42,12 @@ def main(args=None):
             raise RuntimeError("No CUDA devices available")
     video_src = VideoSource(str(args.src.absolute()))
     video_sink = FlowImageWriter(str(args.dest))
+    try:
+        args.flow_algorithm_getter
+    except AttributeError:
+        parser.print_help()
+        return -1
+
     flow_algorithm = args.flow_algorithm_getter(args)
     pipeline = FlowPipe(
         video_src, flow_algorithm, video_sink,

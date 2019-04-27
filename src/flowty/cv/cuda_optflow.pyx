@@ -29,7 +29,7 @@ cdef class CudaTvL1OpticalFlow:
         self.alg = OpticalFlowDual_TVL1.create(tau, lambda_, theta, scale_count, warp_count, epsilon,
             iterations, scale_step, gamma, use_initial_flow)
 
-    def __call__(self, Mat reference, Mat target):
+    def __call__(self, Mat reference, Mat target) -> Mat:
         cvtColor(<InputArray>reference.c_mat,
                  <OutputArray>self.reference,
                  ColorConversionCodes.COLOR_BGR2GRAY)
@@ -46,8 +46,9 @@ cdef class CudaTvL1OpticalFlow:
             deref(self.alg).calc(<InputArray>self.reference_gpu,
                                  <InputArray>self.target_gpu,
                                  <InputOutputArray>self.flow_gpu)
-            self.flow_gpu.download(<OutputArray> self.flow)
-        return Mat.from_mat(self.flow)
+        flow = Mat()
+        self.flow_gpu.download(<OutputArray> flow.c_mat)
+        return flow
 
     @property
     def tau(self):
