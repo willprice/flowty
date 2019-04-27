@@ -1,5 +1,5 @@
-from flowty.methods.cuda_optflow import CudaTvL1OpticalFlow
-from flowty.methods.optflow import TvL1OpticalFlow
+from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow
+from flowty.cv.optflow import TvL1OpticalFlow
 
 
 def get_tvl1_method(args):

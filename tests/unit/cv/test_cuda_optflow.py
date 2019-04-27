@@ -49,6 +49,12 @@ class TestCudaTvL1OpticalFlow:
     def test_use_initial_flow_property(self):
         assert not CudaTvL1OpticalFlow().use_initial_flow
 
+    def test_repr(self):
+        assert repr(CudaTvL1OpticalFlow()) == ("CudaTvL1OpticalFlow(" +
+        "tau=0.25, lambda_=0.15, theta=0.3, epsilon=0.01, gamma=0.0, scale_step=0.8, "
+        "scale_count=5, warp_count=5, iterations=300, use_initial_flow=False"
+        ")")
+
     def test_computing_flow(self):
         alg = CudaTvL1OpticalFlow()
         reference = make_random_uint8_mat(10, 20, 3)

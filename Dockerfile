@@ -6,8 +6,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 RUN mkdir /src
 WORKDIR /src
-ADD dev-requirements.txt requirements.txt /src/
-RUN python3 -m pip install -r dev-requirements.txt
+RUN python3 -m pip install Cython numpy pytest
 ADD . /src/
 RUN make install
 ENTRYPOINT ["/usr/local/bin/flowty"]

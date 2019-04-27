@@ -113,9 +113,8 @@ cdef class CudaTvL1OpticalFlow:
         return (self.__class__.__name__ +
             ("("
              "tau={tau}, lambda_={lambda_}, theta={theta}, epsilon={epsilon}, gamma={gamma}, "
-             "scale_count={scale_count}, warp_count={warp_count}, "
-             "iterations={iterations}, scale_step={scale_step}, "
-             "use_initial_flow={use_initial_flow}"
+             "scale_step={scale_step}, scale_count={scale_count}, warp_count={warp_count}, "
+             "iterations={iterations}, use_initial_flow={use_initial_flow}"
              ")"
              ).format(
                 tau=self.tau,

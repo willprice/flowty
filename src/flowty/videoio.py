@@ -2,6 +2,7 @@ from pathlib import Path
 import numpy as np
 from .cv.imgcodecs import imwrite
 
+
 class FlowImageWriter:
     def __init__(self, file_path_template: str):
         self.file_path_template = file_path_template

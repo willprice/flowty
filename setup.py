@@ -54,8 +54,8 @@ extensions = [
         "src/flowty/cv/videoio.pyx",
         "src/flowty/cv/imgcodecs.pyx",
         "src/flowty/cv/cuda.pyx",
-        "src/flowty/methods/optflow.pyx",
-        "src/flowty/methods/cuda_optflow.pyx",
+        "src/flowty/cv/optflow.pyx",
+        "src/flowty/cv/cuda_optflow.pyx",
     ]
 ]
 
