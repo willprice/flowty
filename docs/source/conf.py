@@ -58,6 +58,6 @@ html_theme_options = {
     'github_user': 'willprice',
     'github_repo': 'flowty',
     'github_button': 'true',
-    'description': 'The swiss army knife for extracting optical flow',
+    'description': 'The swiss army knife of computing optical flow',
     'fixed_sidebar': True,
 }

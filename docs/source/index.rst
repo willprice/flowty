@@ -7,9 +7,10 @@ Welcome to Flowty
    :maxdepth: 3
 
    index
+   io_formats
    build
 
-Flowty (pronounced `floʊtiː <https://en.wikipedia.org/wiki/Help:IPA/English>`_) is the swiss army knife for extracting `optical flow <https://en.wikipedia.org/wiki/Optical_flow>`_.
+Flowty (pronounced `floʊtiː <https://en.wikipedia.org/wiki/Help:IPA/English>`_) is the swiss army knife of computing `optical flow <https://en.wikipedia.org/wiki/Optical_flow>`_.
 
 
 Flow methods
@@ -22,6 +23,15 @@ The following OpenCV optical flow methods are implemented:
   `CPU\ <https://docs.opencv.org/4.1.0/dc/d4d/classcv_1_1optflow_1_1DualTVL1OpticalFlow.html>`_
   / `GPU\ <https://docs.opencv.org/4.1.0/d6/d39/classcv_1_1cuda_1_1OpticalFlowDual__TVL1.html>`_)
 
+
+Roadmap
+-------
+
+The following methods aren't implemented, but are on the roadmap to implement next.
+
+- `Brox <https://lmb.informatik.uni-freiburg.de/people/brox/pub/brox_eccv04_of.pdf>`_ (OpenCV reference `GPU\ <https://docs.opencv.org/4.1.0/d7/d18/classcv_1_1cuda_1_1BroxOpticalFlow.html>`_)
+- `Pyramidal Lucas-Kanade <http://robots.stanford.edu/cs223b04/algo_affine_tracking.pdf>`_ (OpenCV reference `GPU\ <https://docs.opencv.org/4.1.0/d0/da4/classcv_1_1cuda_1_1DensePyrLKOpticalFlow.html>`_)
+- `Farneback <http://www.diva-portal.org/smash/get/diva2:273847/FULLTEXT01.pdf>`_ (OpenCV reference `CPU\ <https://docs.opencv.org/4.1.0/de/d9e/classcv_1_1FarnebackOpticalFlow.html>`_ / `GPU\ <https://docs.opencv.org/4.1.0/d7/d18/classcv_1_1cuda_1_1BroxOpticalFlow.html>`_)
 
 
 Usage
@@ -40,18 +50,18 @@ You will need the following software installed on your host:
 - `docker-ce <https://docs.docker.com/install/>`_
 - `nvidia-docker <https://github.com/NVIDIA/nvidia-docker>`_
 
-To check these prerequisites are satified check
+To check these prerequisites are satified, run
 
 .. code-block:: console
 
-    $ docker run --runtime=nvidia --rm nvidia/cuda:9.0-base nvidia-smi
+    $ docker run --runtime=nvidia --rm nvidia/cuda:10.1-base nvidia-smi
 
-prints the output from ``nvidia-smi``
+It should print the output of ``nvidia-smi``
 
 Invoking flowty
 ---------------
 
-The container will run ``flowty`` by default, so you can provide arguments like you would if you were running ``flowty`` installed natively on your host. 
+The container will run ``flowty`` by default, so you can provide arguments like you would if you were running ``flowty`` installed natively on your host.
 
 For example, to compute TV-L1 optical flow from the video `/absolute/path/to/video_dir/video.mp4` and save the flow u, v components as separate JPEGs in `/absolute/path/to/video_dir/flow/{axis}/`, run the following command:
 
@@ -69,11 +79,13 @@ For example, to compute TV-L1 optical flow from the video `/absolute/path/to/vid
        willprice/flowty \
        tvl1 "/data/video.mp4" "/data/flow/{axis}/frame_{index:05d}.jpg" --cuda
 
+Check out :doc:`io_formats` to find out more about supported formats.
+
 Explanation
 -----------
 
-As docker isn't heavily used in the computer vision community we'll
-break this command down piece by piece to explain what's going on.
+As docker isn't heavily used in the computer vision community we'll break
+the above example command down piece by piece to explain what's going on.
 
 First, an explanation of what Docker is: Docker is a container platform,
 it allows you to build and run containers, which are a little like
