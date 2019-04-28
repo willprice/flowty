@@ -129,7 +129,8 @@ class TvL1FlowCommand(AbstractFlowCommand):
             "--median-filtering",
             type=int,
             default=None,
-            help="Median filter kernel size (1 = no filter) (3 or 5). CPU only",
+            help="Median filter kernel size (1 = no filter) (3 or 5). CPU only "
+            "(default: 3 for CPU, disabled for GPU)",
         )
         parser.add_argument(
             "--cuda",
