@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 
 # -- Project information -----------------------------------------------------
 
+master_doc = 'index'
 
 about = {}
 with open(Path(__file__).parent.parent.parent / 'src' / 'flowty' / '__version__.py', 'r') as f:
