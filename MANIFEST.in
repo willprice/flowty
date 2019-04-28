@@ -1,2 +1,4 @@
 include README.md
-INCLUDE docs/source/*.md
+include docs/source/*.rst
+prune media/
+prune tests
