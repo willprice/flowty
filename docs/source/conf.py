@@ -10,19 +10,29 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+from datetime import datetime
 import os
 import sys
+from pathlib import Path
+
 sys.path.insert(0, os.path.abspath('../../src'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'Flowty'
-copyright = '2019, Will Price'
-author = 'Will Price'
 
+about = {}
+with open(Path(__file__).parent.parent / 'src' / 'flowty' / '__version__.py', 'r') as f:
+    exec(f.read(), about)
+
+project = about['__title__'].capitalize()
+author = about['__author__']
+copyright = "{year}, {author}".format(
+        year=datetime.now().year,
+        author=author
+)
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+release = about['__version__']
 
 
 # -- General configuration ---------------------------------------------------
