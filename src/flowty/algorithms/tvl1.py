@@ -94,7 +94,7 @@ class TvL1FlowCommand(AbstractFlowCommand):
         parser.add_argument(
             "--scale-count",
             type=int,
-            default=3,
+            default=5,
             help="Number of scales used to create the pyramid of images.",
         )
         parser.add_argument(
@@ -129,7 +129,7 @@ class TvL1FlowCommand(AbstractFlowCommand):
             "--median-filtering",
             type=int,
             default=None,
-            help="Median filter kernel size (1 = no filter) (3 or 5) ",
+            help="Median filter kernel size (1 = no filter) (3 or 5). CPU only",
         )
         parser.add_argument(
             "--cuda",
