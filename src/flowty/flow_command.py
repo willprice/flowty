@@ -1,6 +1,7 @@
 from abc import ABC
 
 from flowty.cv import mat_to_array
+from flowty.cv.cuda import get_cuda_enabled_device_count
 from flowty.cv.videoio import VideoSource
 from flowty.flow_pipe import FlowPipe
 from flowty.imgproc import quantise_flow
@@ -25,6 +26,10 @@ class AbstractFlowCommand(ABC):
         raise NotImplementedError()
 
     def main(self):
+        if self.args.cuda:
+            if get_cuda_enabled_device_count() < 1:
+                raise RuntimeError("No CUDA devices available")
+
         pipeline = FlowPipe(
                 src=self.video_src,
                 flow_algorithm=self.flow_algorithm,
