@@ -67,7 +67,7 @@ setup(
     description=about["__description__"],
     version=about["__version__"],
     ext_modules=extensions,
-    packages=find_packages('src') + ['flowty.methods'],
+    packages=find_packages('src') + ['flowty.algorithms'],
     package_dir={'': 'src'},
     install_requires=["numpy"],
     extras_require={
@@ -90,7 +90,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     entry_points={
-        'console_scripts': ['flowty=flowty.cli:main']
+        'console_scripts': ['flowty=flowty.flowty:main']
     },
     keywords=[
         "computer-vision",
