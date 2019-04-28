@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 
 
 about = {}
-with open(Path(__file__).parent.parent / 'src' / 'flowty' / '__version__.py', 'r') as f:
+with open(Path(__file__).parent.parent.parent / 'src' / 'flowty' / '__version__.py', 'r') as f:
     exec(f.read(), about)
 
 project = about['__title__'].capitalize()
