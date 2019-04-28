@@ -1,6 +1,8 @@
 import time
 from collections import deque
 
+from flowty.cv import Mat
+
 
 class FlowPipe:
     def __init__(self,
@@ -44,7 +46,7 @@ class FlowPipe:
                 print("Write time (ms): ", write_time)
             t = time.time()
 
-    def write_flow(self, flow):
+    def write_flow(self, flow: Mat) -> None:
         for transform in self.output_transforms:
             flow = transform(flow)
         self.dest.write(flow)

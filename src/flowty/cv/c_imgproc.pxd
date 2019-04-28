@@ -1,7 +1,7 @@
 from .c_core cimport InputArray, OutputArray
 
 
-cdef extern from "opencv2/imgproc.hpp" namespace "cv":
+cdef extern from "opencv2/imgproc.hpp" namespace "cv" nogil:
     enum ColorConversionCodes:
         COLOR_BGR2GRAY
 

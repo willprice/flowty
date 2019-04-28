@@ -4,12 +4,12 @@ from libcpp.memory cimport shared_ptr
 from .c_core cimport Mat, InputArray, InputOutputArray
 
 
-cdef extern from "opencv2/video/tracking.hpp" namespace "cv":
+cdef extern from "opencv2/video/tracking.hpp" namespace "cv" nogil:
     cdef cppclass DenseOpticalFlow:
         void calc(InputArray i0, InputArray i1, InputOutputArray flow)
         void collectGarbage()
 
-cdef extern from "opencv2/optflow.hpp" namespace "cv::optflow":
+cdef extern from "opencv2/optflow.hpp" namespace "cv::optflow" nogil:
     cdef cppclass DualTVL1OpticalFlow(DenseOpticalFlow):
         @staticmethod
         shared_ptr[DualTVL1OpticalFlow] create(double, double, double, int, int, double, int, int, double, double, int, bool) except+

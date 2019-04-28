@@ -58,10 +58,10 @@ cdef class TvL1OpticalFlow:
         cvtColor(<InputArray>target.c_mat,
                  <OutputArray>self.target,
                  ColorConversionCodes.COLOR_BGR2GRAY)
-        if self.flow.empty():
-             self.flow = c_Mat(reference.rows, reference.cols, CV_32FC2)
-        deref(self.alg).calc(<InputArray>self.reference, <InputArray>self.target, <InputOutputArray>self.flow)
-        return Mat.from_mat(self.flow.clone())
+        flow = Mat()
+        deref(self.alg).calc(<InputArray>self.reference, <InputArray>self.target,
+                             <InputOutputArray> flow.c_mat)
+        return flow
 
 
     @property

@@ -3,17 +3,17 @@ from libcpp.vector cimport vector
 from .c_core cimport Ptr, InputArray, InputOutputArray
 
 
-cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv::cuda":
+cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv::cuda" nogil:
     cdef cppclass DenseOpticalFlow:
-        void calc(InputArray, InputArray, InputOutputArray flow) nogil except +
-        void collectGarbage() nogil except +
+        void calc(InputArray, InputArray, InputOutputArray flow) except +
+        void collectGarbage() except +
 
     cdef cppclass OpticalFlowDual_TVL1(DenseOpticalFlow):
 
         @staticmethod
         Ptr[OpticalFlowDual_TVL1] create(double, double, double, int,
                                          int, double, int, double,
-                                         double, bool) nogil except +
+                                         double, bool) except +
 
         double getEpsilon()
         double getGamma()

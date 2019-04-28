@@ -9,7 +9,9 @@ from .c_imgcodecs cimport imwrite as c_imwrite
 
 def imwrite(file_path: str, img: np.ndarray):
     cdef string c_file_path = file_path.encode('UTF-8')
-    cdef Mat mat = Mat.fromarray(img)
+    # We have to copy the data as it seems imwrite is async and the img np.ndarray data
+    # can be released before it is actually written causing memory corruption.
+    cdef Mat mat = Mat.fromarray(img, copy=True)
     cdef bool success = c_imwrite(c_file_path, <InputArray> mat.c_mat)
     if not success:
         raise RuntimeError("Could not write image to {}".format(file_path))

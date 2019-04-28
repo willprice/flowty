@@ -1,7 +1,8 @@
 # cython: language_level=3
 
 from cpython cimport Py_buffer
-from .c_core cimport Mat as c_Mat
+from libcpp cimport bool
+from .c_core cimport Mat as c_Mat, OutputArray
 from . cimport c_core
 import numpy as np
 cimport numpy as np
@@ -52,7 +53,7 @@ CV_64FC4 = c_core.CV_64FC4
 
 # CV type code -> (byte_count, type_str, channel_count)
 # See type_str details at https://docs.python.org/3/library/struct.html#format-characters
-_mat_type_lookup = {
+cdef _mat_type_lookup = {
     c_core.CV_8UC1: (1, b'B', 1),
     c_core.CV_8UC2: (1, b'B', 2),
     c_core.CV_8UC3: (1, b'B', 3),
@@ -89,7 +90,7 @@ _mat_type_lookup = {
     c_core.CV_64FC4: (8, b'd', 4),
 }
 
-_np_dtype_to_cv_dtype_lookup = {
+cdef _np_dtype_to_cv_dtype_lookup = {
      (np.dtype(np.uint8), 1): CV_8UC1,
      (np.dtype(np.uint8), 2): CV_8UC2,
      (np.dtype(np.uint8), 3): CV_8UC3,
@@ -127,13 +128,16 @@ cdef class Mat:
         self.view_count = 0
 
     @staticmethod
-    cdef Mat from_mat(c_Mat mat):
+    cdef Mat from_mat(c_Mat mat, bool copy = False):
         cdef Mat py_mat = Mat.__new__(Mat)
-        py_mat.c_mat = mat
+        if copy:
+            py_mat.c_mat= mat.clone()
+        else:
+            py_mat.c_mat= mat
         return py_mat
 
     @staticmethod
-    def fromarray(np.ndarray array not None) -> Mat:
+    def fromarray(np.ndarray array not None, bool copy = False) -> Mat:
         if array.ndim not in (2, 3):
             raise ValueError("Can only create a 2D or 3D Mat, but the array passed was {}D".format(array.ndim))
         channels = array.shape[2] if array.ndim > 2 else 1
@@ -142,7 +146,7 @@ cdef class Mat:
             array = np.ascontiguousarray(array)
         cdef void* data = <void*> array.data
         cdef c_Mat c_mat = c_Mat(array.shape[0], array.shape[1], dtype, data)
-        return Mat.from_mat(c_mat)
+        return Mat.from_mat(c_mat, copy=copy)
 
     @property
     def rows(self):
@@ -188,24 +192,24 @@ cdef class Mat:
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         (byte_count, type_str, channel_count) = _mat_type_lookup[self.c_mat.type()]
 
-        self.shape[0] = self.c_mat.rows
-        self.shape[1] = self.c_mat.cols
-        self.shape[2] = self.c_mat.channels()
+        self._shape[0] = self.c_mat.rows
+        self._shape[1] = self.c_mat.cols
+        self._shape[2] = self.c_mat.channels()
 
-        self.strides[0] = self.c_mat.step[0]
-        self.strides[1] = self.c_mat.step[1]
-        self.strides[2] = byte_count
+        self._strides[0] = <Py_ssize_t> self.c_mat.step[0]
+        self._strides[1] = <Py_ssize_t> self.c_mat.step[1]
+        self._strides[2] = <Py_ssize_t> byte_count
 
         buffer.buf = <char *>(self.c_mat.data)
         buffer.format = type_str
         buffer.internal = NULL
         buffer.itemsize = byte_count
-        buffer.len = self.shape[0] * self.shape[1] * self.shape[2] * byte_count
+        buffer.len = self._shape[0] * self._shape[1] * self._shape[2] * byte_count
         buffer.ndim = self.ndim
         buffer.obj = self
         buffer.readonly = 0
-        buffer.shape = self.shape
-        buffer.strides = self.strides
+        buffer.shape = self._shape
+        buffer.strides = self._strides
         buffer.suboffsets = NULL
 
         self.view_count += 1
