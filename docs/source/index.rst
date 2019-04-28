@@ -9,6 +9,7 @@ Welcome to Flowty
    index
    io_formats
    build
+   development
 
 Flowty (pronounced `floʊtiː <https://en.wikipedia.org/wiki/Help:IPA/English>`_) is the swiss army knife of computing `optical flow <https://en.wikipedia.org/wiki/Optical_flow>`_.
 
