@@ -1,4 +1,7 @@
 # Flowty
+![Build status](https://img.shields.io/circleci/project/github/willprice/flowty/master.svg)
+[![Dockerhub](https://img.shields.io/badge/docker-flowty-informational.svg)](https://cloud.docker.com/repository/docker/willprice/flowty)
+[![Docker image size](https://images.microbadger.com/badges/image/willprice/flowty.svg)](https://microbadger.com/images/willprice/flowty)
 
 Flowty is the swiss army knife of computing optical flow. Flowty is...
 
