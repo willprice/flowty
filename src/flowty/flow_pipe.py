@@ -24,7 +24,7 @@ class FlowPipe:
         frame_queue = deque()
         frame_iter = iter(self.src)
         while len(frame_queue) < self.dilation:
-            frame_queue.appendleft(next(frame_iter))
+            frame_queue.append(next(frame_iter))
         assert len(frame_queue) == self.dilation
 
         t = time.time()
@@ -32,7 +32,7 @@ class FlowPipe:
             data_load_time = time.time() - t
             print("Data time (ms): ", data_load_time * 1e3)
             reference = frame_queue.popleft()
-            frame_queue.appendleft(target)
+            frame_queue.append(target)
             assert len(frame_queue) == self.dilation
             if i % self.stride == 0:
                 t = time.time()
