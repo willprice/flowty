@@ -1,5 +1,5 @@
 # Flowty
-![Build status](https://img.shields.io/circleci/project/github/willprice/flowty/master.svg)
+[![Build status](https://img.shields.io/circleci/project/github/willprice/flowty/master.svg)](https://circleci.com/gh/willprice/flowty)
 [![Dockerhub](https://img.shields.io/badge/docker-flowty-informational.svg)](https://hub.docker.com/r/willprice/flowty)
 [![Docker image size](https://images.microbadger.com/badges/image/willprice/flowty.svg)](https://microbadger.com/images/willprice/flowty)
 [![Read the Docs](https://img.shields.io/readthedocs/flowty.svg)](https://flowty.rtfd.org)
