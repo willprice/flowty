@@ -1,5 +1,6 @@
 import time
 from collections import deque
+from typing import Iterator
 
 from flowty.cv import Mat
 
@@ -20,9 +21,15 @@ class FlowPipe:
         self.stride = stride
         self.dilation = dilation
 
+    def _frame_generator(self) -> Iterator:
+        for frame in iter(self.src):
+            for transform in self.input_transforms:
+                frame = transform(frame)
+            yield frame
+
     def run(self):
+        frame_iter = self._frame_generator()
         frame_queue = deque()
-        frame_iter = iter(self.src)
         while len(frame_queue) < self.dilation:
             frame_queue.append(next(frame_iter))
         assert len(frame_queue) == self.dilation

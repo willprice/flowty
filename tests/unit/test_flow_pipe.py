@@ -11,6 +11,10 @@ class RecordingDestination:
 
 
 class TestFlowPipe:
+    def difference(reference, target):
+        print("target: {}, reference: {}".format(target ,reference))
+        return target - reference
+
     def test_1_flow_field_between_2_frames(self):
         flow = self.compute_flow([1, 2])
         assert len(flow) == 1
@@ -30,16 +34,34 @@ class TestFlowPipe:
         flow = self.compute_flow([1, 2, 3, 5], dilation=2)
         assert flow == [np.array([2]), np.array([3])]
 
-    def compute_flow(self, frames, dilation=1, stride=1):
-        src = [np.array([f]) for f in frames]
+    def test_input_transform_is_applied_to_reference_frames(self):
+        flow = self.compute_flow([1, 2, 3],
+                                 flow_algorithm=lambda reference, target: reference,
+                                 input_transforms=[lambda f: f+1])
+        assert flow == [np.array([2]), np.array([3])]
 
-        def flow_algorithm(reference, target):
-            print("target: {}, reference: {}".format(target ,reference))
-            return target - reference
+    def test_input_transform_is_applied_to_target_frames(self):
+        flow = self.compute_flow([1, 2, 3],
+                                 flow_algorithm=lambda reference, target: target,
+                                 input_transforms=[lambda f: f+1])
+        assert flow == [np.array([3]), np.array([4])]
+
+    def test_output_transform_is_applied_to_flow(self):
+        flow = self.compute_flow([1, 2, 3],
+                                 output_transforms=[lambda f: f+1])
+        assert flow == [np.array([2]), np.array([2])]
+
+    def compute_flow(self, frames, flow_algorithm=difference, dilation=1, stride=1,
+                     input_transforms=None, output_transforms=None):
+        src = [np.array([f]) for f in frames]
 
         dest = RecordingDestination()
         pipe = FlowPipe(
-                src, flow_algorithm, dest, dilation=dilation, stride=stride
+                src, flow_algorithm, dest, dilation=dilation, stride=stride,
+                input_transforms=input_transforms, output_transforms=output_transforms
         )
         pipe.run()
         return dest.flow
+
+
+
