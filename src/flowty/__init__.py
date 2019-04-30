@@ -1,3 +1,4 @@
+from .__version__ import *
 from .cv import cuda
 
 try:
