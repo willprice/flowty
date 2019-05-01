@@ -2,7 +2,8 @@
 
 from libcpp cimport bool
 from cython.operator cimport dereference as deref
-from ..cv.c_cuda_optflow cimport OpticalFlowDual_TVL1, BroxOpticalFlow, DensePyrLKOpticalFlow
+from ..cv.c_cuda_optflow cimport OpticalFlowDual_TVL1, BroxOpticalFlow, \
+    DensePyrLKOpticalFlow, FarnebackOpticalFlow
 from ..cv.core cimport Mat
 from ..cv.c_core cimport Mat as c_Mat, Size as c_Size
 from ..cv.c_core cimport InputArray, OutputArray, InputOutputArray, Ptr, CV_32FC1, \
@@ -217,7 +218,7 @@ cdef class CudaBroxOpticalFlow:
         )
 
 
-cdef class CudaPyramidalLucasKanade(object):
+cdef class CudaPyramidalLucasKanade:
     cdef Ptr[DensePyrLKOpticalFlow] alg
     cdef c_GpuMat reference_gpu, target_gpu, flow_gpu
     cdef c_Mat reference, target, flow, reference_float, target_float
@@ -264,3 +265,43 @@ cdef class CudaPyramidalLucasKanade(object):
     @property
     def iterations(self):
         return deref(self.alg).getNumIters()
+
+
+cdef class CudaFarnebackOpticalFlow:
+    cdef Ptr[FarnebackOpticalFlow] alg
+    cdef c_GpuMat reference_gpu, target_gpu, flow_gpu
+    cdef c_Mat reference, target, flow, reference_float, target_float
+
+    def __cinit__(self,
+                  int scale_count = 5,
+                  double scale_factor = 0.5,
+                  bool fast_pyramids = False,
+                  int window_size = 13,
+                  int iterations = 10,
+                  int poly_count = 5,
+                  double poly_sigma = 1.1,
+                  ):
+        self.alg = FarnebackOpticalFlow.create(scale_count, scale_factor,
+                                               fast_pyramids, window_size,
+                                               iterations, poly_count, poly_sigma)
+
+    def __call__(self, Mat reference, Mat target) -> Mat:
+        cvtColor(<InputArray>reference.c_mat,
+                 <OutputArray>self.reference,
+                 ColorConversionCodes.COLOR_BGR2GRAY)
+        cvtColor(<InputArray>target.c_mat,
+                 <OutputArray>self.target,
+                 ColorConversionCodes.COLOR_BGR2GRAY)
+        if self.flow_gpu.empty():
+            self.flow_gpu = c_GpuMat(self.reference.rows,
+                                     self.reference.cols,
+                                     CV_32FC2)
+        with nogil:
+            self.target_gpu.upload(<InputArray> self.target)
+            self.reference_gpu.upload(<InputArray> self.reference)
+            deref(self.alg).calc(<InputArray>self.reference_gpu,
+                                 <InputArray>self.target_gpu,
+                                 <InputOutputArray>self.flow_gpu)
+        flow = Mat()
+        self.flow_gpu.download(<OutputArray> flow.c_mat)
+        return flow

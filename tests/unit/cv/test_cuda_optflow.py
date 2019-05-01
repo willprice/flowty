@@ -3,7 +3,7 @@ import flowty
 import numpy as np
 
 from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow, CudaBroxOpticalFlow, \
-    CudaPyramidalLucasKanade
+    CudaPyramidalLucasKanade, CudaFarnebackOpticalFlow
 from flowty.cv.core import Mat
 
 from tests.unit.cv.test_optflow import OpticalFlowAlgorithmTestBase
@@ -93,8 +93,6 @@ class TestCudaBroxOpticalFlow(OpticalFlowAlgorithmTestBase):
                "inner_iterations=5, outer_iterations=150, solver_iterations=10)"
 
 
-
-
 class TestCudaPyramidalLucasKanade(OpticalFlowAlgorithmTestBase):
     def get_flow_algorithm(self):
         return CudaPyramidalLucasKanade()
@@ -107,3 +105,9 @@ class TestCudaPyramidalLucasKanade(OpticalFlowAlgorithmTestBase):
 
     def test_iterations_property(self):
         assert CudaPyramidalLucasKanade().iterations == 30
+
+
+
+class TestCudaFarnebackOpticalFlow(OpticalFlowAlgorithmTestBase):
+    def get_flow_algorithm(self):
+        return CudaFarnebackOpticalFlow()

@@ -70,3 +70,7 @@ cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv::cuda" nogil:
         void setNumIters(int)
         void setUseInitialFlow(bool)
         void setWinSize(Size)
+
+    cdef cppclass FarnebackOpticalFlow(DenseOpticalFlow):
+        @staticmethod
+        Ptr[FarnebackOpticalFlow] create(int, double, bool, int, int, int, double)
