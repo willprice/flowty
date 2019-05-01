@@ -2,10 +2,11 @@
 
 from libcpp cimport bool
 from cython.operator cimport dereference as deref
-from ..cv.c_cuda_optflow cimport OpticalFlowDual_TVL1
+from ..cv.c_cuda_optflow cimport OpticalFlowDual_TVL1, BroxOpticalFlow
 from ..cv.core cimport Mat
 from ..cv.c_core cimport Mat as c_Mat
-from ..cv.c_core cimport InputArray, OutputArray, InputOutputArray, Ptr, CV_32FC2
+from ..cv.c_core cimport InputArray, OutputArray, InputOutputArray, Ptr, CV_32FC1, \
+    CV_32FC2
 from ..cv.c_imgproc cimport cvtColor, ColorConversionCodes
 from ..cv.c_cuda cimport GpuMat as c_GpuMat
 
@@ -130,3 +131,87 @@ cdef class CudaTvL1OpticalFlow:
                 use_initial_flow=self.use_initial_flow
             ))
 
+cdef class CudaBroxOpticalFlow:
+    cdef Ptr[BroxOpticalFlow] alg
+    cdef c_GpuMat reference_gpu, target_gpu, flow_gpu
+    cdef c_Mat reference, target, flow, reference_float, target_float
+
+    def __cinit__(self,
+                  double alpha=0.197,
+                  double gamma=50.0,
+                  double scale_factor=0.8,
+                  int inner_iterations=5,
+                  int outer_iterations=150,
+                  int solver_iterations=10,
+                  ):
+        self.alg = BroxOpticalFlow.create(alpha, gamma, scale_factor, inner_iterations,
+                                          outer_iterations, solver_iterations)
+
+    def __call__(self, Mat reference, Mat target) -> Mat:
+        cvtColor(<InputArray>reference.c_mat,
+                 <OutputArray>self.reference,
+                 ColorConversionCodes.COLOR_BGR2GRAY)
+        cvtColor(<InputArray>target.c_mat,
+                 <OutputArray>self.target,
+                 ColorConversionCodes.COLOR_BGR2GRAY)
+        self.target.convertTo(<OutputArray> self.target_float, CV_32FC1, 1.0 / 255.0)
+        self.reference.convertTo(<OutputArray> self.reference_float, CV_32FC1,
+                                 1.0 / 255.0)
+
+        with nogil:
+            if self.flow_gpu.empty():
+                self.flow_gpu = c_GpuMat(self.reference.rows,
+                                         self.reference.cols,
+                                         CV_32FC2)
+            self.target_gpu.upload(<InputArray> self.target_float)
+            self.reference_gpu.upload(<InputArray> self.reference_float)
+
+
+            deref(self.alg).calc(<InputArray>self.reference_gpu,
+                                 <InputArray>self.target_gpu,
+                                 <InputOutputArray>self.flow_gpu)
+        flow = Mat()
+        self.flow_gpu.download(<OutputArray> flow.c_mat)
+        return flow
+
+    @property
+    def inner_iterations(self):
+        return deref(self.alg).getInnerIterations()
+
+    @property
+    def outer_iterations(self):
+        return deref(self.alg).getOuterIterations()
+
+    @property
+    def solver_iterations(self):
+        return deref(self.alg).getSolverIterations()
+
+    @property
+    def scale_factor(self):
+        return deref(self.alg).getPyramidScaleFactor()
+
+    @property
+    def alpha(self):
+        return deref(self.alg).getFlowSmoothness()
+
+    @property
+    def gamma(self):
+        return deref(self.alg).getGradientConstancyImportance()
+
+    def __repr__(self):
+        return (self.__class__.__name__ + "("
+            "alpha={alpha}, "
+            "gamma={gamma}, "
+            "scale_factor={scale_factor}, "
+            "inner_iterations={inner_iterations}, "
+            "outer_iterations={outer_iterations}, "
+            "solver_iterations={solver_iterations}"
+            ")"
+        ).format(
+                alpha=self.alpha,
+                gamma=self.gamma,
+                scale_factor=round(self.scale_factor, 5),
+                inner_iterations=self.inner_iterations,
+                outer_iterations=self.outer_iterations,
+                solver_iterations=self.solver_iterations
+        )

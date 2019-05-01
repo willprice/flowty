@@ -36,3 +36,27 @@ cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv::cuda" nogil:
         void setTau(double)
         void setTheta(double)
         void setUseInitialFlow(bool)
+
+    cdef cppclass BroxOpticalFlow(DenseOpticalFlow):
+        @staticmethod
+        Ptr[BroxOpticalFlow] create(double, double, double, int, int, int) except +
+
+        # alpha
+        double getFlowSmoothness()
+        # gamma
+        double getGradientConstancyImportance()
+        double getPyramidScaleFactor()
+        int getInnerIterations()
+        int getOuterIterations()
+        int getSolverIterations()
+
+        void setFlowSmoothness(double)
+        void setGradientConstancyImportance(double)
+        void setPyramidScaleFactor(double)
+        void setInnerIterations(int)
+        void setOuterIterations(int)
+        void setSolverIterations(int)
+
+
+
+

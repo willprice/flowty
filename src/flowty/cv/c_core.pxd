@@ -85,6 +85,9 @@ cdef extern from "opencv2/core.hpp" namespace "cv" nogil:
 
         void create(int, int, int)  except +
         void copyTo(OutputArray) except +
+        void convertTo(OutputArray, int) except +
+        void convertTo(OutputArray, int, double) except +
+        void convertTo(OutputArray, int, double, double) except +
         bool empty()
         int type()
         Mat clone()

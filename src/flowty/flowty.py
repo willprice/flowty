@@ -1,5 +1,5 @@
 import argparse
-from flowty.algorithms import tvl1
+from flowty.algorithms import tvl1, brox
 import sys
 
 parser = argparse.ArgumentParser(
@@ -9,6 +9,7 @@ parser = argparse.ArgumentParser(
 )
 command_parsers = parser.add_subparsers()
 tvl1.TvL1FlowCommand.register_command(command_parsers)
+brox.BroxFlowCommand.register_command(command_parsers)
 
 
 def main(argv=None):

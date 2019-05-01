@@ -19,6 +19,8 @@ cdef extern from "opencv2/core/cuda.hpp" namespace "cv::cuda" nogil:
         bool empty()
         int type()
         GpuMat clone() except +
+        void convertTo(OutputArray, int) except +
+        void convertTo(OutputArray, int, double, double) except +
         int depth()
         int channels()
         size_t elemSize()

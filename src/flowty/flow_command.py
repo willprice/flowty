@@ -26,9 +26,6 @@ class AbstractFlowCommand(ABC):
         raise NotImplementedError()
 
     def main(self):
-        if self.args.cuda:
-            if get_cuda_enabled_device_count() < 1:
-                raise RuntimeError("No CUDA devices available")
 
         pipeline = FlowPipe(
                 src=self.video_src,
