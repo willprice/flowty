@@ -24,13 +24,13 @@ The following OpenCV optical flow methods are implemented:
   `CPU\ <https://docs.opencv.org/4.1.0/dc/d4d/classcv_1_1optflow_1_1DualTVL1OpticalFlow.html>`_
   / `GPU\ <https://docs.opencv.org/4.1.0/d6/d39/classcv_1_1cuda_1_1OpticalFlowDual__TVL1.html>`_)
 - `Brox <https://lmb.informatik.uni-freiburg.de/people/brox/pub/brox_eccv04_of.pdf>`_ (OpenCV reference `GPU\ <https://docs.opencv.org/4.1.0/d7/d18/classcv_1_1cuda_1_1BroxOpticalFlow.html>`_)
+- `Pyramidal Lucas-Kanade <http://robots.stanford.edu/cs223b04/algo_affine_tracking.pdf>`_ (OpenCV reference `GPU\ <https://docs.opencv.org/4.1.0/d0/da4/classcv_1_1cuda_1_1DensePyrLKOpticalFlow.html>`_)
 
 Roadmap
 -------
 
 The following methods aren't implemented, but are on the roadmap to implement next.
 
-- `Pyramidal Lucas-Kanade <http://robots.stanford.edu/cs223b04/algo_affine_tracking.pdf>`_ (OpenCV reference `GPU\ <https://docs.opencv.org/4.1.0/d0/da4/classcv_1_1cuda_1_1DensePyrLKOpticalFlow.html>`_)
 - `Farneback <http://www.diva-portal.org/smash/get/diva2:273847/FULLTEXT01.pdf>`_ (OpenCV reference `CPU\ <https://docs.opencv.org/4.1.0/de/d9e/classcv_1_1FarnebackOpticalFlow.html>`_ / `GPU\ <https://docs.opencv.org/4.1.0/d7/d18/classcv_1_1cuda_1_1BroxOpticalFlow.html>`_)
 
 

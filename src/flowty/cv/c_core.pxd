@@ -61,6 +61,7 @@ cdef extern from "opencv2/core.hpp" namespace "cv" nogil:
         double aspectRatio()
         bool empty()
         Size& operator=(Size&)
+        int height, width
 
     cdef cppclass MatSize:
         MatSize(int *)

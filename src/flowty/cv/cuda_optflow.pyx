@@ -2,9 +2,9 @@
 
 from libcpp cimport bool
 from cython.operator cimport dereference as deref
-from ..cv.c_cuda_optflow cimport OpticalFlowDual_TVL1, BroxOpticalFlow
+from ..cv.c_cuda_optflow cimport OpticalFlowDual_TVL1, BroxOpticalFlow, DensePyrLKOpticalFlow
 from ..cv.core cimport Mat
-from ..cv.c_core cimport Mat as c_Mat
+from ..cv.c_core cimport Mat as c_Mat, Size as c_Size
 from ..cv.c_core cimport InputArray, OutputArray, InputOutputArray, Ptr, CV_32FC1, \
     CV_32FC2
 from ..cv.c_imgproc cimport cvtColor, ColorConversionCodes
@@ -215,3 +215,52 @@ cdef class CudaBroxOpticalFlow:
                 outer_iterations=self.outer_iterations,
                 solver_iterations=self.solver_iterations
         )
+
+
+cdef class CudaPyramidalLucasKanade(object):
+    cdef Ptr[DensePyrLKOpticalFlow] alg
+    cdef c_GpuMat reference_gpu, target_gpu, flow_gpu
+    cdef c_Mat reference, target, flow, reference_float, target_float
+
+    def __cinit__(self,
+                  int window_size = 13,
+                  int max_scales = 3,
+                  int iterations=30,
+                  bool use_initial_flow = False
+                  ):
+        self.alg = DensePyrLKOpticalFlow.create(c_Size(window_size, window_size),
+                                                max_scales,
+                                                iterations, False)
+
+    def __call__(self, Mat reference, Mat target) -> Mat:
+        cvtColor(<InputArray>reference.c_mat,
+                 <OutputArray>self.reference,
+                 ColorConversionCodes.COLOR_BGR2GRAY)
+        cvtColor(<InputArray>target.c_mat,
+                 <OutputArray>self.target,
+                 ColorConversionCodes.COLOR_BGR2GRAY)
+        if self.flow_gpu.empty():
+            self.flow_gpu = c_GpuMat(self.reference.rows,
+                                     self.reference.cols,
+                                     CV_32FC2)
+        with nogil:
+            self.target_gpu.upload(<InputArray> self.target)
+            self.reference_gpu.upload(<InputArray> self.reference)
+            deref(self.alg).calc(<InputArray>self.reference_gpu,
+                                 <InputArray>self.target_gpu,
+                                 <InputOutputArray>self.flow_gpu)
+        flow = Mat()
+        self.flow_gpu.download(<OutputArray> flow.c_mat)
+        return flow
+
+    @property
+    def window_size(self):
+        return deref(self.alg).getWinSize().height
+
+    @property
+    def max_scales(self):
+        return deref(self.alg).getMaxLevel()
+
+    @property
+    def iterations(self):
+        return deref(self.alg).getNumIters()

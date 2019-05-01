@@ -1,6 +1,6 @@
 from libcpp cimport bool
 from libcpp.vector cimport vector
-from .c_core cimport Ptr, InputArray, InputOutputArray
+from .c_core cimport Ptr, InputArray, InputOutputArray, Size
 
 
 cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv::cuda" nogil:
@@ -57,6 +57,16 @@ cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv::cuda" nogil:
         void setOuterIterations(int)
         void setSolverIterations(int)
 
+    cdef cppclass DensePyrLKOpticalFlow(DenseOpticalFlow):
+        @staticmethod
+        Ptr[DensePyrLKOpticalFlow] create(Size, int, int, bool)
 
+        int getMaxLevel()
+        int getNumIters()
+        int getUseInitialFlow()
+        Size getWinSize()
 
-
+        void setMaxLevel(int)
+        void setNumIters(int)
+        void setUseInitialFlow(bool)
+        void setWinSize(Size)

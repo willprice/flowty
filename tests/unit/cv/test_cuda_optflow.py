@@ -2,7 +2,8 @@ import pytest
 import flowty
 import numpy as np
 
-from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow, CudaBroxOpticalFlow
+from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow, CudaBroxOpticalFlow, \
+    CudaPyramidalLucasKanade
 from flowty.cv.core import Mat
 
 from tests.unit.cv.test_optflow import OpticalFlowAlgorithmTestBase
@@ -91,3 +92,18 @@ class TestCudaBroxOpticalFlow(OpticalFlowAlgorithmTestBase):
                "CudaBroxOpticalFlow(alpha=1.0, gamma=50.0, scale_factor=0.8, " \
                "inner_iterations=5, outer_iterations=150, solver_iterations=10)"
 
+
+
+
+class TestCudaPyramidalLucasKanade(OpticalFlowAlgorithmTestBase):
+    def get_flow_algorithm(self):
+        return CudaPyramidalLucasKanade()
+
+    def test_window_size_property(self):
+        assert CudaPyramidalLucasKanade().window_size == 13
+
+    def test_max_scales_property(self):
+        assert CudaPyramidalLucasKanade().max_scales == 3
+
+    def test_iterations_property(self):
+        assert CudaPyramidalLucasKanade().iterations == 30
