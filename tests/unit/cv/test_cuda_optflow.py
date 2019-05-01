@@ -3,21 +3,22 @@ import flowty
 import numpy as np
 
 from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow, CudaBroxOpticalFlow
-from flowty.cv.core import Mat, CV_8UC3, CV_32FC2
-from numpy.testing import assert_equal
+from flowty.cv.core import Mat
 
+from tests.unit.cv.test_optflow import OpticalFlowAlgorithmTestBase
 
 if not flowty.cuda_available:
     pytest.skip("skipping CUDA-only module: flowty.cv.cuda_optflow", allow_module_level=True)
 
 
-def make_random_uint8_mat(rows, cols, channels):
-    return Mat.fromarray((np.random.rand(rows, cols, channels) * 255).astype(np.uint8))
+def to_rgb(grayscale_img: np.ndarray):
+    assert grayscale_img.ndim == 2
+    return Mat.fromarray(np.stack([grayscale_img] * 3, axis=-1).astype(np.uint8))
 
 
-class TestCudaTvL1OpticalFlow:
-    def test_creation(self):
-        CudaTvL1OpticalFlow()
+class TestCudaTvL1OpticalFlow(OpticalFlowAlgorithmTestBase):
+    def get_flow_algorithm(self):
+        return CudaTvL1OpticalFlow()
 
     def test_tau_property(self):
         assert CudaTvL1OpticalFlow().tau == 0.25
@@ -55,78 +56,10 @@ class TestCudaTvL1OpticalFlow:
         "scale_count=5, warp_count=5, iterations=300, use_initial_flow=False"
         ")")
 
-    def test_computing_flow(self):
-        alg = CudaTvL1OpticalFlow()
-        reference = make_random_uint8_mat(10, 20, 3)
-        target = make_random_uint8_mat(10, 20, 3)
 
-        flow = alg(reference, target)
-
-        assert flow.shape[:2] == target.shape[:2]
-        assert flow.shape[2] == 2
-        assert flow.dtype == CV_32FC2
- 
-    def test_input_frames_arent_modified(self):
-        alg = CudaTvL1OpticalFlow()
-        reference = make_random_uint8_mat(10, 20, 3)
-        target = make_random_uint8_mat(10, 20, 3)
-        reference_original = reference.asarray().copy()
-        target_original = target.asarray().copy()
-
-        alg(reference, target)
-
-        assert_equal(reference.asarray(), reference_original)
-        assert_equal(target.asarray(), target_original)
-
-    def test_flow_mat_isnt_changed_when_computing_multiple_flows(self):
-        alg = CudaTvL1OpticalFlow()
-        reference = make_random_uint8_mat(10, 20, 3)
-        target = make_random_uint8_mat(10, 20, 3)
-
-        flow1 = alg(reference, target)
-        flow1_original = flow1.asarray().copy()
-        alg(target, reference)
-
-        assert_equal(flow1.asarray(), flow1_original)
-
-
-class TestCudaBroxOpticalFlow:
-    def test_creation(self):
-        CudaBroxOpticalFlow()
-
-    def test_computing_flow(self):
-        alg = CudaBroxOpticalFlow()
-        reference = make_random_uint8_mat(10, 20, 3)
-        target = make_random_uint8_mat(10, 20, 3)
-
-        flow = alg(reference, target)
-
-        assert flow.shape[:2] == target.shape[:2]
-        assert flow.shape[2] == 2
-        assert flow.dtype == CV_32FC2
-
-    def test_input_frames_arent_modified(self):
-        alg = CudaBroxOpticalFlow()
-        reference = make_random_uint8_mat(10, 20, 3)
-        target = make_random_uint8_mat(10, 20, 3)
-        reference_original = reference.asarray().copy()
-        target_original = target.asarray().copy()
-
-        alg(reference, target)
-
-        assert_equal(reference.asarray(), reference_original)
-        assert_equal(target.asarray(), target_original)
-
-    def test_flow_mat_isnt_changed_when_computing_multiple_flows(self):
-        alg = CudaBroxOpticalFlow()
-        reference = make_random_uint8_mat(10, 20, 3)
-        target = make_random_uint8_mat(10, 20, 3)
-
-        flow1 = alg(reference, target)
-        flow1_original = flow1.asarray().copy()
-        alg(target, reference)
-
-        assert_equal(flow1.asarray(), flow1_original)
+class TestCudaBroxOpticalFlow(OpticalFlowAlgorithmTestBase):
+    def get_flow_algorithm(self):
+        return CudaBroxOpticalFlow()
 
     def test_alpha_property(self):
         alpha = 0.5
@@ -157,3 +90,4 @@ class TestCudaBroxOpticalFlow:
         assert repr(CudaBroxOpticalFlow(alpha=1.0, scale_factor=0.8)) == \
                "CudaBroxOpticalFlow(alpha=1.0, gamma=50.0, scale_factor=0.8, " \
                "inner_iterations=5, outer_iterations=150, solver_iterations=10)"
+
