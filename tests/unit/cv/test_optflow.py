@@ -2,7 +2,7 @@ from abc import ABC
 
 import numpy as np
 from numpy.testing import assert_equal
-from flowty.cv.optflow import TvL1OpticalFlow
+from flowty.cv.optflow import TvL1OpticalFlow, FarnebackOpticalFlow
 from flowty.cv.core import Mat, CV_32FC2
 
 
@@ -99,3 +99,8 @@ class TestTvL1OpticalFlow(OpticalFlowAlgorithmTestBase):
                 "scale_count=5, warp_count=5, outer_iterations=10, inner_iterations=30, "
                 "median_filtering=5, use_initial_flow=False"
                 ")")
+
+
+class TestFarnebackOpticalFlow(OpticalFlowAlgorithmTestBase):
+    def get_flow_algorithm(self):
+        return FarnebackOpticalFlow()

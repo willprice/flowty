@@ -2,12 +2,12 @@
 
 from cython.operator cimport dereference as deref
 from libcpp cimport bool
-from libcpp.memory cimport shared_ptr
-from ..cv.c_core cimport Mat as c_Mat, InputArray, OutputArray, \
+from ..cv.c_core cimport Ptr, Mat as c_Mat, InputArray, OutputArray, \
     InputOutputArray, CV_32FC2
 from ..cv.c_imgproc cimport cvtColor, ColorConversionCodes
 from ..cv.core cimport Mat
-from ..cv.c_optflow cimport DualTVL1OpticalFlow as c_DualTVL1OpticalFlow
+from ..cv.c_optflow cimport DualTVL1OpticalFlow as c_DualTVL1OpticalFlow, \
+     FarnebackOpticalFlow as c_FarnebackOpticalFlow
 
 cdef class TvL1OpticalFlow:
     """
@@ -32,7 +32,7 @@ cdef class TvL1OpticalFlow:
              parameter that assures the stability of the method. It also affects the running
              time, so it is a compromise between speed and accuracy.
     """
-    cdef shared_ptr[c_DualTVL1OpticalFlow] alg
+    cdef Ptr[c_DualTVL1OpticalFlow] alg
     cdef c_Mat reference, target, flow
 
     def __cinit__(self,
@@ -154,3 +154,34 @@ cdef class TvL1OpticalFlow:
                 median_filtering=self.median_filtering,
                 use_initial_flow=self.use_initial_flow
             ))
+
+
+cdef class FarnebackOpticalFlow:
+    cdef Ptr[c_FarnebackOpticalFlow] alg
+    cdef c_Mat reference, target, flow
+
+    def __cinit__(self,
+                  int scale_count = 5,
+                  double scale_factor = 0.5,
+                  bool fast_pyramids = False,
+                  int window_size = 13,
+                  int iterations = 10,
+                  int poly_count = 5,
+                  double poly_sigma = 1.1,
+                  ):
+        self.alg = c_FarnebackOpticalFlow.create(scale_count, scale_factor,
+                                               fast_pyramids, window_size,
+                                               iterations, poly_count, poly_sigma)
+
+
+    def __call__(self, Mat reference, Mat target):
+        cvtColor(<InputArray>reference.c_mat,
+                 <OutputArray>self.reference,
+                 ColorConversionCodes.COLOR_BGR2GRAY)
+        cvtColor(<InputArray>target.c_mat,
+                 <OutputArray>self.target,
+                 ColorConversionCodes.COLOR_BGR2GRAY)
+        flow = Mat()
+        deref(self.alg).calc(<InputArray>self.reference, <InputArray>self.target,
+                             <InputOutputArray> flow.c_mat)
+        return flow

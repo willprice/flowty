@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 command_parsers = parser.add_subparsers()
+
 tvl1.TvL1FlowCommand.register_command(command_parsers)
 brox.BroxFlowCommand.register_command(command_parsers)
 pyrlk.PyrLKFlowCommand.register_command(command_parsers)

@@ -2,8 +2,8 @@ import argparse
 
 from flowty.cli import flow_method_base_parser
 from flowty.cv.cuda import get_cuda_enabled_device_count
-from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow, CudaFarnebackOpticalFlow
-from flowty.cv.optflow import TvL1OpticalFlow
+from flowty.cv.cuda_optflow import CudaFarnebackOpticalFlow
+from flowty.cv.optflow import FarnebackOpticalFlow
 from flowty.flow_command import AbstractFlowCommand
 
 
@@ -20,7 +20,15 @@ class FarnebackFlowCommand(AbstractFlowCommand):
                     args.poly_sigma
             )
         else:
-            raise NotImplementedError()
+            return FarnebackOpticalFlow(
+                    args.scale_count,
+                    args.scale_factor,
+                    args.fast_pyramids,
+                    args.window_size,
+                    args.iterations,
+                    args.poly_count,
+                    args.poly_sigma
+            )
 
     @staticmethod
     def register_command(command_parsers):

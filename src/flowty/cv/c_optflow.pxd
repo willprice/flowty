@@ -1,7 +1,6 @@
 # cython: language_level = 3
 from libcpp cimport bool
-from libcpp.memory cimport shared_ptr
-from .c_core cimport Mat, InputArray, InputOutputArray
+from .c_core cimport Ptr, InputArray, InputOutputArray
 
 
 cdef extern from "opencv2/video/tracking.hpp" namespace "cv" nogil:
@@ -9,10 +8,15 @@ cdef extern from "opencv2/video/tracking.hpp" namespace "cv" nogil:
         void calc(InputArray i0, InputArray i1, InputOutputArray flow)
         void collectGarbage()
 
+    cdef cppclass FarnebackOpticalFlow(DenseOpticalFlow):
+        @staticmethod
+        Ptr[FarnebackOpticalFlow] create(int, double, bool, int, int, int, double) except +
+
 cdef extern from "opencv2/optflow.hpp" namespace "cv::optflow" nogil:
     cdef cppclass DualTVL1OpticalFlow(DenseOpticalFlow):
         @staticmethod
-        shared_ptr[DualTVL1OpticalFlow] create(double, double, double, int, int, double, int, int, double, double, int, bool) except+
+        Ptr[DualTVL1OpticalFlow] create(double, double, double, int, int, double, int,
+                                      int, double, double, int, bool) except+
         double getEpsilon()
         double getGamma()
         double getLambda()
@@ -38,3 +42,4 @@ cdef extern from "opencv2/optflow.hpp" namespace "cv::optflow" nogil:
         void setTheta(double)
         void setUseInitialFlow(bool)
         void setWarpingsNumber(int)
+
