@@ -25,13 +25,17 @@ The following OpenCV optical flow methods are implemented:
   / `GPU\ <https://docs.opencv.org/4.1.0/d6/d39/classcv_1_1cuda_1_1OpticalFlowDual__TVL1.html>`_)
 - `Brox <https://lmb.informatik.uni-freiburg.de/people/brox/pub/brox_eccv04_of.pdf>`_ (OpenCV reference `GPU\ <https://docs.opencv.org/4.1.0/d7/d18/classcv_1_1cuda_1_1BroxOpticalFlow.html>`_)
 - `Pyramidal Lucas-Kanade <http://robots.stanford.edu/cs223b04/algo_affine_tracking.pdf>`_ (OpenCV reference `GPU\ <https://docs.opencv.org/4.1.0/d0/da4/classcv_1_1cuda_1_1DensePyrLKOpticalFlow.html>`_)
+- `Farneback <http://www.diva-portal.org/smash/get/diva2:273847/FULLTEXT01.pdf>`_ (OpenCV reference `CPU\ <https://docs.opencv.org/4.1.0/de/d9e/classcv_1_1FarnebackOpticalFlow.html>`_ / `GPU\ <https://docs.opencv.org/4.1.0/d7/d18/classcv_1_1cuda_1_1BroxOpticalFlow.html>`_)
 
 Roadmap
 -------
 
 The following methods aren't implemented, but are on the roadmap to implement next.
 
-- `Farneback <http://www.diva-portal.org/smash/get/diva2:273847/FULLTEXT01.pdf>`_ (OpenCV reference `CPU\ <https://docs.opencv.org/4.1.0/de/d9e/classcv_1_1FarnebackOpticalFlow.html>`_ / `GPU\ <https://docs.opencv.org/4.1.0/d7/d18/classcv_1_1cuda_1_1BroxOpticalFlow.html>`_)
+- `Dense Inverse Search <https://arxiv.org/abs/1603.03590>`_ (OpenCV reference `CPU\ <https://docs.opencv.org/4.1.0/de/d4f/classcv_1_1DISOpticalFlow.html>`_)
+- `Variational Refinement <https://lmb.informatik.uni-freiburg.de/people/brox/pub/brox_eccv04_of.pdf>`_ (OpenCV reference `CPU\ <https://docs.opencv.org/4.1.0/d2/d4b/classcv_1_1VariationalRefinement.html>`_)
+- `PCA flow <http://files.is.tue.mpg.de/black/papers/cvpr2015_pcaflow.pdf>`_ (OpenCV reference `CPU\ <https://docs.opencv.org/4.1.0/d1/da2/classcv_1_1optflow_1_1OpticalFlowPCAFlow.html>`_)
+- `Robust local optical flow <http://elvera.nue.tu-berlin.de/files/1498Geistert2016.pdf>`_ (OpenCV reference `CPU\ <https://docs.opencv.org/4.1.0/df/d59/classcv_1_1optflow_1_1DenseRLOFOpticalFlow.html>`_)
 
 
 Usage
