@@ -2,10 +2,11 @@
 
 from cpython cimport Py_buffer
 from libcpp cimport bool
-from .c_core cimport Mat as c_Mat, OutputArray
+from .c_core cimport Mat as c_Mat, getNumThreads, setNumThreads, setUseOptimized
 from . cimport c_core
 import numpy as np
 cimport numpy as np
+from cpython.ref cimport PyObject, Py_XDECREF, Py_XINCREF
 np.import_array()
 
 CV_8U = c_core.CV_8U
@@ -125,7 +126,12 @@ cdef _np_dtype_to_cv_dtype_lookup = {
 cdef class Mat:
     def __cinit__(self, int rows=0, int cols=0, int dtype=CV_8UC3):
         self.c_mat = c_Mat(rows, cols, dtype)
+        # view_obj holds
+        self._view_obj = NULL
         self.view_count = 0
+
+    def __dealloc__(self):
+        Py_XDECREF(self._view_obj)
 
     @staticmethod
     cdef Mat from_mat(c_Mat mat, bool copy = False):
@@ -146,7 +152,10 @@ cdef class Mat:
             array = np.ascontiguousarray(array)
         cdef void* data = <void*> array.data
         cdef c_Mat c_mat = c_Mat(array.shape[0], array.shape[1], dtype, data)
-        return Mat.from_mat(c_mat, copy=copy)
+        mat = Mat.from_mat(c_mat, copy=copy)
+        mat._view_obj = <PyObject *> array
+        Py_XINCREF(<PyObject *> array)
+        return mat
 
     @property
     def rows(self):
@@ -223,3 +232,12 @@ cdef class Mat:
             cols=self.cols,
             dtype=self.dtype
         )
+
+cpdef get_num_threads():
+    return getNumThreads()
+
+cpdef set_num_threads(int thread_count):
+    setNumThreads(thread_count)
+
+cpdef set_use_optimized(bool on):
+    setUseOptimized(on)

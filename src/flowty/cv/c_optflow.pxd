@@ -5,12 +5,64 @@ from .c_core cimport Ptr, InputArray, InputOutputArray
 
 cdef extern from "opencv2/video/tracking.hpp" namespace "cv" nogil:
     cdef cppclass DenseOpticalFlow:
-        void calc(InputArray i0, InputArray i1, InputOutputArray flow)
-        void collectGarbage()
+        void calc(InputArray i0, InputArray i1, InputOutputArray flow) except +
+        void collectGarbage() except +
 
     cdef cppclass FarnebackOpticalFlow(DenseOpticalFlow):
         @staticmethod
         Ptr[FarnebackOpticalFlow] create(int, double, bool, int, int, int, double) except +
+
+    cdef cppclass DISOpticalFlow(DenseOpticalFlow):
+        @staticmethod
+        Ptr[DISOpticalFlow] create(int) except +
+
+        int getFinestScale()
+        int getGradientDescentIterations()
+        int getPatchSize()
+        int getPatchStride()
+        bool getUseMeanNormalization()
+        bool getUseSpatialPropagation()
+        float getVariationalRefinementAlpha()
+        float getVariationalRefinementDelta()
+        float getVariationalRefinementGamma()
+        int getVariationalRefinementIterations()
+
+        void setFinestScale(int)
+        void setGradientDescentIterations(int)
+        void setPatchSize(int)
+        void setPatchStride(int)
+        void setUseMeanNormalization(bool)
+        void setUseSpatialPropagation(bool)
+        void setVariationalRefinementAlpha(float)
+        void setVariationalRefinementDelta(float)
+        void setVariationalRefinementGamma(float)
+        void setVariationalRefinementIterations(int)
+
+    cdef cppclass VariationalRefinement(DenseOpticalFlow):
+        @staticmethod
+        Ptr[VariationalRefinement] create() except +
+
+        float getAlpha()
+        float getDelta()
+        int getFixedPointIterations()
+        float getGamma()
+        float getOmega()
+        int getSorIterations()
+
+        void setAlpha(float)
+        void setDelta(float)
+        void setFixedPointIterations(int)
+        void setGamma(float)
+        void setOmega(float)
+        void setSorIterations(int)
+
+
+cdef extern from "opencv2/video/tracking.hpp" namespace "cv::DISOpticalFlow":
+        enum:
+            PRESET_ULTRAFAST
+            PRESET_FAST
+            PRESET_MEDIUM
+
 
 cdef extern from "opencv2/optflow.hpp" namespace "cv::optflow" nogil:
     cdef cppclass DualTVL1OpticalFlow(DenseOpticalFlow):
@@ -43,3 +95,6 @@ cdef extern from "opencv2/optflow.hpp" namespace "cv::optflow" nogil:
         void setUseInitialFlow(bool)
         void setWarpingsNumber(int)
 
+    cdef cppclass DenseRLOFOpticalFlow(DenseOpticalFlow):
+        @staticmethod
+        Ptr[DenseRLOFOpticalFlow] create() except +

@@ -2,15 +2,20 @@ from abc import ABC
 
 import numpy as np
 from numpy.testing import assert_equal
-from flowty.cv.optflow import TvL1OpticalFlow, FarnebackOpticalFlow
+from flowty.cv.optflow import TvL1OpticalFlow, FarnebackOpticalFlow, \
+    DenseInverseSearchOpticalFlow, VariationalRefinementOpticalFlow
 from flowty.cv.core import Mat, CV_32FC2
+import pytest
 
 
 def make_random_uint8_mat(rows, cols, channels):
-    return Mat.fromarray((np.random.rand(rows, cols, channels) * 255).astype(np.uint8))
+    return Mat.fromarray((np.random.rand(rows, cols, channels) * 255).astype(
+            np.uint8), copy=True)
 
 
 class OpticalFlowAlgorithmTestBase(ABC):
+    img_size = (10, 20)
+
     def get_flow_algorithm(self):
         raise NotImplementedError()
 
@@ -19,8 +24,9 @@ class OpticalFlowAlgorithmTestBase(ABC):
 
     def test_computing_flow(self):
         alg = self.get_flow_algorithm()
-        reference = make_random_uint8_mat(10, 20, 3)
-        target = make_random_uint8_mat(10, 20, 3)
+        print(self.img_size)
+        reference = make_random_uint8_mat(self.img_size[0], self.img_size[1], 3)
+        target = make_random_uint8_mat(self.img_size[0], self.img_size[1], 3)
 
         flow = alg(reference, target)
 
@@ -30,8 +36,8 @@ class OpticalFlowAlgorithmTestBase(ABC):
 
     def test_input_frames_arent_modified(self):
         alg = self.get_flow_algorithm()
-        reference = make_random_uint8_mat(10, 20, 3)
-        target = make_random_uint8_mat(10, 20, 3)
+        reference = make_random_uint8_mat(self.img_size[0], self.img_size[1], 3)
+        target = make_random_uint8_mat(self.img_size[0], self.img_size[1], 3)
         reference_original = reference.asarray().copy()
         target_original = target.asarray().copy()
 
@@ -42,8 +48,8 @@ class OpticalFlowAlgorithmTestBase(ABC):
 
     def test_flow_mat_isnt_changed_when_computing_multiple_flows(self):
         alg = self.get_flow_algorithm()
-        reference = make_random_uint8_mat(10, 20, 3)
-        target = make_random_uint8_mat(10, 20, 3)
+        reference = make_random_uint8_mat(self.img_size[0], self.img_size[1], 3)
+        target = make_random_uint8_mat(self.img_size[0], self.img_size[1], 3)
 
         flow1 = alg(reference, target)
         flow1_original = flow1.asarray().copy()
@@ -104,3 +110,16 @@ class TestTvL1OpticalFlow(OpticalFlowAlgorithmTestBase):
 class TestFarnebackOpticalFlow(OpticalFlowAlgorithmTestBase):
     def get_flow_algorithm(self):
         return FarnebackOpticalFlow()
+
+
+class TestVariationalRefinementOpticalFlow(OpticalFlowAlgorithmTestBase):
+    def get_flow_algorithm(self):
+        return VariationalRefinementOpticalFlow()
+
+
+class TestDenseInverseSearchOpticalFlow(OpticalFlowAlgorithmTestBase):
+    img_size = (128, 128)
+
+    def get_flow_algorithm(self):
+        return DenseInverseSearchOpticalFlow()
+

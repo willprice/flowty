@@ -3,11 +3,30 @@
 from cython.operator cimport dereference as deref
 from libcpp cimport bool
 from ..cv.c_core cimport Ptr, Mat as c_Mat, InputArray, OutputArray, \
-    InputOutputArray, CV_32FC2
+    InputOutputArray, CV_32FC2, CV_32FC1
 from ..cv.c_imgproc cimport cvtColor, ColorConversionCodes
 from ..cv.core cimport Mat
-from ..cv.c_optflow cimport DualTVL1OpticalFlow as c_DualTVL1OpticalFlow, \
-     FarnebackOpticalFlow as c_FarnebackOpticalFlow
+from ..cv.core import get_num_threads, set_num_threads
+from ..cv.c_optflow cimport DenseOpticalFlow as c_DenseOpticalFlow, \
+     DualTVL1OpticalFlow as c_DualTVL1OpticalFlow, \
+     FarnebackOpticalFlow as c_FarnebackOpticalFlow, \
+     DISOpticalFlow as c_DISOpticalFlow, PRESET_ULTRAFAST, PRESET_FAST, PRESET_MEDIUM, \
+     VariationalRefinement as c_VariationalRefinement, \
+     DenseRLOFOpticalFlow as c_DenseRLOFOpticalFlow
+
+
+cdef compute_flow(Ptr[c_DenseOpticalFlow] algorithm,
+                  Mat reference_rgb,
+                  Mat target_rgb,
+                  c_Mat& reference_gray,
+                  c_Mat& target_gray,
+                  c_Mat& flow):
+    cvtColor(<InputArray> reference_rgb.c_mat, <OutputArray> reference_gray,
+             ColorConversionCodes.COLOR_BGR2GRAY)
+    cvtColor(<InputArray> target_rgb.c_mat, <OutputArray> target_gray,
+             ColorConversionCodes.COLOR_BGR2GRAY)
+    deref(algorithm).calc(<InputArray> reference_gray, <InputArray> target_gray,
+                          <InputOutputArray> flow)
 
 cdef class TvL1OpticalFlow:
     """
@@ -33,7 +52,7 @@ cdef class TvL1OpticalFlow:
              time, so it is a compromise between speed and accuracy.
     """
     cdef Ptr[c_DualTVL1OpticalFlow] alg
-    cdef c_Mat reference, target, flow
+    cdef c_Mat reference, target
 
     def __cinit__(self,
                   double tau=0.25,
@@ -52,15 +71,11 @@ cdef class TvL1OpticalFlow:
             inner_iterations, outer_iterations, scale_step, gamma, median_filtering, use_initial_flow)
 
     def __call__(self, Mat reference, Mat target):
-        cvtColor(<InputArray>reference.c_mat,
-                 <OutputArray>self.reference,
-                 ColorConversionCodes.COLOR_BGR2GRAY)
-        cvtColor(<InputArray>target.c_mat,
-                 <OutputArray>self.target,
-                 ColorConversionCodes.COLOR_BGR2GRAY)
         flow = Mat()
-        deref(self.alg).calc(<InputArray>self.reference, <InputArray>self.target,
-                             <InputOutputArray> flow.c_mat)
+        compute_flow(<Ptr[c_DenseOpticalFlow]>self.alg, reference, target,
+                     self.reference,
+                     self.target,
+                     flow.c_mat)
         return flow
 
 
@@ -175,13 +190,73 @@ cdef class FarnebackOpticalFlow:
 
 
     def __call__(self, Mat reference, Mat target):
+        flow = Mat()
+        compute_flow(<Ptr[c_DenseOpticalFlow]>self.alg, reference, target,
+                     self.reference,
+                     self.target,
+                     flow.c_mat)
+        return flow
+
+
+cdef class VariationalRefinementOpticalFlow:
+    cdef Ptr[c_VariationalRefinement] alg
+    cdef c_Mat reference, target, flow, reference_float, target_float
+
+    def __cinit__(self,
+                  fixed_point_iterations = 5,
+                  sor_iterations = 5,
+                  alpha = 20.0,
+                  delta = 5.0,
+                  gamma = 10.0,
+                  omega = 1.6,
+                  ):
+        self.alg = c_VariationalRefinement.create()
+        deref(self.alg).setFixedPointIterations(fixed_point_iterations)
+        deref(self.alg).setSorIterations(sor_iterations)
+        deref(self.alg).setAlpha(alpha)
+        deref(self.alg).setDelta(delta)
+        deref(self.alg).setGamma(gamma)
+        deref(self.alg).setOmega(omega)
+
+
+    def __call__(self, Mat reference, Mat target):
         cvtColor(<InputArray>reference.c_mat,
                  <OutputArray>self.reference,
                  ColorConversionCodes.COLOR_BGR2GRAY)
         cvtColor(<InputArray>target.c_mat,
                  <OutputArray>self.target,
                  ColorConversionCodes.COLOR_BGR2GRAY)
-        flow = Mat()
-        deref(self.alg).calc(<InputArray>self.reference, <InputArray>self.target,
+        self.target.convertTo(<OutputArray> self.target_float, CV_32FC1, 1.0 / 255.0)
+        self.reference.convertTo(<OutputArray> self.reference_float, CV_32FC1,
+                                 1.0 / 255.0)
+        flow = Mat(self.reference.rows, self.reference.cols, CV_32FC2)
+        # Without setting the flow matrix to zero, you get weird pattern artifacts.
+        flow.c_mat.setTo(<InputArray> 0)
+        deref(self.alg).calc(<InputArray>self.reference_float,
+                             <InputArray>self.target_float,
                              <InputOutputArray> flow.c_mat)
+        return flow
+
+
+cdef class DenseInverseSearchOpticalFlow:
+    cdef Ptr[c_DISOpticalFlow] alg
+    cdef c_Mat reference, target
+    _preset_to_enum = {
+        'ultrafast': PRESET_ULTRAFAST,
+        'fast': PRESET_FAST,
+        'medium': PRESET_MEDIUM
+    }
+
+    def __cinit__(self, str preset = 'ultrafast'):
+        print(preset)
+        preset_int = self._preset_to_enum[preset.lower()]
+        self.alg = c_DISOpticalFlow.create(preset_int)
+
+
+    def __call__(self, Mat reference, Mat target):
+        flow = Mat()
+        compute_flow(<Ptr[c_DenseOpticalFlow]>self.alg, reference, target,
+                     self.reference,
+                     self.target,
+                     flow.c_mat)
         return flow

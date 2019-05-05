@@ -97,6 +97,7 @@ cdef extern from "opencv2/core.hpp" namespace "cv" nogil:
         size_t elemSize()
         size_t elemSize1()
         T at[T](int, int)
+        Mat& setTo(InputArray)
 
         void* data
         MatSize size
@@ -105,11 +106,16 @@ cdef extern from "opencv2/core.hpp" namespace "cv" nogil:
         unsigned char* dataend
         int cols, rows, flags, dims
 
+    int getNumThreads()
+    void setNumThreads(int)
+    void setUseOptimized(bool)
+
 
 cdef extern from "opencv2/core/mat.hpp" namespace "cv" nogil:
     cdef cppclass InputArray:
         InputArray()
-        InputArray(int, void*)
+        InputArray(int, void *)
+        InputArray(float)
         InputArray(const Mat&)
         InputArray(vector[Mat] &)
 

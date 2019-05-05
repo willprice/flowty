@@ -221,7 +221,7 @@ cdef class CudaBroxOpticalFlow:
 cdef class CudaPyramidalLucasKanade:
     cdef Ptr[DensePyrLKOpticalFlow] alg
     cdef c_GpuMat reference_gpu, target_gpu, flow_gpu
-    cdef c_Mat reference, target, flow, reference_float, target_float
+    cdef c_Mat reference, target, flow
 
     def __cinit__(self,
                   int window_size = 13,
