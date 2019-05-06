@@ -8,7 +8,7 @@
 Flowty is the swiss army knife of computing optical flow. Flowty is...
 
 - Performant—leveraging CUDA accelerated optical flow implementations.
-- Easy of use—packaged in docker so you don't have to compile OpenCV and 
+- Easy to use—packaged in docker so you don't have to compile OpenCV and 
   Flowty yourself.
 
 ## Usage
