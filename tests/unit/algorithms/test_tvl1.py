@@ -3,6 +3,7 @@ import argparse
 import pytest
 from pytest import approx
 
+import flowty
 from flowty.algorithms.tvl1 import TvL1FlowCommand
 from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow
 from flowty.cv.optflow import TvL1OpticalFlow
@@ -77,3 +78,9 @@ class TestTvL1FlowCommand:
 
         with pytest.raises(ValueError):
             self.get_flow_alg(str_args)
+
+    def test_raises_runtime_error_if_cuda_not_available(self, monkeypatch):
+        with monkeypatch.context() as ctx:
+            ctx.setattr(flowty, "cuda_available", False)
+            with pytest.raises(RuntimeError):
+                self.get_flow_alg(["tvl1", "src", "dest", "--cuda"])

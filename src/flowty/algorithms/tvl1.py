@@ -1,5 +1,6 @@
 import argparse
 
+import flowty
 from flowty.cli import flow_method_base_parser
 from flowty.cv.cuda import get_cuda_enabled_device_count
 from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow
@@ -10,6 +11,8 @@ from flowty.flow_command import AbstractFlowCommand
 class TvL1FlowCommand(AbstractFlowCommand):
     def get_flow_algorithm(self, args):
         if args.cuda:
+            if not flowty.cuda_available:
+                raise RuntimeError("CUDA-accelerated device not available.")
             if args.median_filtering:
                 raise ValueError(
                     "Median filtering is not supported in CUDA TVL1 " "implementation"
