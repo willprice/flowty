@@ -8,6 +8,7 @@ from flowty.algorithms.brox import BroxFlowCommand
 from flowty.cv.cuda_optflow import CudaBroxOpticalFlow
 
 
+@pytest.mark.skipif('not flowty.cuda_available')
 class TestBroxFlowCommand:
     @pytest.mark.parametrize("arg,attr,value", [
         ("alpha", "alpha", 0.2),

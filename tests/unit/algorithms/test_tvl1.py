@@ -42,6 +42,7 @@ class TestTvL1FlowCommand:
         flow_alg = command.get_flow_algorithm(args)
         return flow_alg
 
+    @pytest.mark.skipif('not flowty.cuda_available')
     @pytest.mark.parametrize("arg,attr,value", [
         ("tau", "tau", 0.2),
         ("lambda", "lambda_", 0.1),
@@ -62,6 +63,7 @@ class TestTvL1FlowCommand:
             value = approx(value)
         assert getattr(flow_alg, attr) == value
 
+    @pytest.mark.skipif('not flowty.cuda_available')
     def test_gpu_iterations(self):
         inner_iterations = 20
         outer_iterations = 30
@@ -73,6 +75,7 @@ class TestTvL1FlowCommand:
         assert isinstance(flow_alg, CudaTvL1OpticalFlow)
         assert flow_alg.iterations == inner_iterations * outer_iterations
 
+    @pytest.mark.skipif('not flowty.cuda_available')
     def test_median_filtering_on_gpu_raises_error(self):
         str_args = ["tvl1", "src", "dest", "--median-filtering", "3", "--cuda"]
 
