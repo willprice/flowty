@@ -4,7 +4,7 @@ import pytest
 from pytest import approx
 
 import flowty
-from flowty.algorithms.tvl1 import TvL1FlowCommand
+from flowty.algorithms.tvl1 import TvL1Command
 from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow
 from flowty.cv.optflow import TvL1OpticalFlow
 
@@ -36,9 +36,9 @@ class TestTvL1FlowCommand:
     def get_flow_alg(self, str_args):
         parser = argparse.ArgumentParser()
         command_parsers = parser.add_subparsers()
-        TvL1FlowCommand.register_command(command_parsers)
+        TvL1Command.register_command(command_parsers)
         args = parser.parse_args(str_args)
-        command = TvL1FlowCommand(args)
+        command = TvL1Command(args)
         flow_alg = command.get_flow_algorithm(args)
         return flow_alg
 

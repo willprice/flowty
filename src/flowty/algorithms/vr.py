@@ -1,6 +1,5 @@
 import argparse
 
-import flowty
 from flowty.cli import flow_method_base_parser
 from flowty.cv.optflow import VariationalRefinementOpticalFlow
 from flowty.flow_command import AbstractFlowCommand
@@ -26,9 +25,16 @@ class VariationalRefinementCommand(AbstractFlowCommand):
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         parser.set_defaults(command=VariationalRefinementCommand)
-        parser.add_argument("--alpha", type=float, default=20.0)
-        parser.add_argument("--delta", type=float, default=5.0)
-        parser.add_argument("--gamma", type=float, default=10.0)
-        parser.add_argument("--omega", type=float, default=1.6)
-        parser.add_argument("--fixed-point-iterations", type=int, default=5)
-        parser.add_argument("--sor-iterations", type=int, default=5)
+        parser.add_argument("--alpha", type=float, default=20.0,
+                            help="Weight of the smoothness term. (0, infty)")
+        parser.add_argument("--delta", type=float, default=5.0,
+                            help="Weight of the color constancy term. (0, infty)")
+        parser.add_argument("--gamma", type=float, default=10.0,
+                            help="Weight of the gradient constancy term. (0, infty)")
+        parser.add_argument("--omega", type=float, default=1.6,
+                            help="Relaxation factor in successive over relaxation "
+                                 "(SOR). (0, 2)")
+        parser.add_argument("--fixed-point-iterations", type=int, default=5,
+                            help="Number of outer (fixed point) iterations")
+        parser.add_argument("--sor-iterations", type=int, default=5,
+                            help="Number of inner (SOR) iterations")

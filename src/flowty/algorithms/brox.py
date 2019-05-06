@@ -2,12 +2,11 @@ import argparse
 
 import flowty
 from flowty.cli import flow_method_base_parser
-from flowty.cv.cuda_optflow import CudaTvL1OpticalFlow, CudaBroxOpticalFlow
-from flowty.cv.optflow import TvL1OpticalFlow
+from flowty.cv.cuda_optflow import CudaBroxOpticalFlow
 from flowty.flow_command import AbstractFlowCommand
 
 
-class BroxFlowCommand(AbstractFlowCommand):
+class BroxCommand(AbstractFlowCommand):
     def get_flow_algorithm(self, args):
         if not flowty.cuda_available:
             raise RuntimeError("CUDA-accelerated device not available. Brox is not "
@@ -29,38 +28,39 @@ class BroxFlowCommand(AbstractFlowCommand):
             description="Compute Brox optical flow",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        parser.set_defaults(command=BroxFlowCommand)
+        parser.set_defaults(command=BroxCommand)
         parser.add_argument(
                 "--alpha",
                 type=float,
                 default=0.197,
-                help="Flow smoothness factor (0 < alpha < 1)",
+                help="Flow smoothness factor. (0, 1)",
         )
         parser.add_argument(
             "--gamma",
             type=float,
             default=50.0,
-            help="Gradient constancy factor (>= 0)",
+            help="Weight of gradient constancy term. (0, infty)",
         )
         parser.add_argument(
             "--inner-iterations",
             type=int,
             default=5,
-            help="Inner iterations (number of lagged non-linearity iterations)",
+            help="Number of inner (lagged non-linearity) iterations."
+                 ,
         )
         parser.add_argument(
             "--outer-iterations",
             type=int,
             default=150,
-            help="Outer warping iterations (number of pyramid levels)"
-            "scheme.",
+            help="Number of outer (warping) iterations.",
         )
         parser.add_argument(
-                "--solver-iterations",
-                type=int,
-                default=10,
-                help="Number of linear system solver iterations"
+            "--solver-iterations",
+            type=int,
+            default=10,
+            help="Number of inner (linear system solver) iterations."
         )
         parser.add_argument(
-            "--scale-factor", type=float, default=0.8, help="Step between scales (<1)"
+            "--scale-factor", type=float, default=0.8,
+                help="Step between image pyramid scales. (0, 1)"
         )

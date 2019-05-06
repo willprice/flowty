@@ -8,7 +8,7 @@ from flowty.cv.optflow import TvL1OpticalFlow
 from flowty.flow_command import AbstractFlowCommand
 
 
-class TvL1FlowCommand(AbstractFlowCommand):
+class TvL1Command(AbstractFlowCommand):
     def get_flow_algorithm(self, args):
         if args.cuda:
             if not flowty.cuda_available:
@@ -56,7 +56,7 @@ class TvL1FlowCommand(AbstractFlowCommand):
             description="Compute TV-L1 optical flow",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        parser.set_defaults(command=TvL1FlowCommand)
+        parser.set_defaults(command=TvL1Command)
         parser.add_argument(
             "--tau", type=float, default=0.25, help="Time step of the numerical scheme."
         )
@@ -66,7 +66,7 @@ class TvL1FlowCommand(AbstractFlowCommand):
             default=0.15,
             help="Weight parameter for the data term, attachment parameter. "
             "This determines the smoothness of the output. "
-            "The smaller this parameter is, the smoother the solutions we obtain. "
+            "The smaller this parameter is, the smoother the solutions obtained. "
             "It depends on the range of motions of the images, so its value should"
             " be adapted to each image sequence",
         )
@@ -90,8 +90,8 @@ class TvL1FlowCommand(AbstractFlowCommand):
             "--epsilon",
             type=float,
             default=0.01,
-            help="Stopping criterion threshold used in the numerical scheme, which is a"
-            " trade-off between precision and running time.  "
+            help="Stopping criterion threshold used in the numerical scheme, which is "
+            "a trade-off between precision and running time. "
             "A small value will yield more accurate solutions at the expense of a "
             "slower convergence.",
         )
@@ -116,15 +116,15 @@ class TvL1FlowCommand(AbstractFlowCommand):
             "--inner-iterations",
             type=int,
             default=30,
-            help="Inner iterations (between outlier filtering) used in the numerical "
-            "scheme.",
+            help="Number of inner iterations (between outlier filtering) used in the "
+                 "numerical scheme.",
         )
         parser.add_argument(
             "--outer-iterations",
             type=int,
             default=10,
-            help="Outer iterations (number of inner loops) used in the numerical "
-            "scheme.",
+            help="Number of outer iterations (number of inner loops) used in the "
+                 "numerical scheme.",
         )
         parser.add_argument(
             "--scale-step", type=float, default=0.8, help="Step between scales (<1)"
@@ -139,7 +139,7 @@ class TvL1FlowCommand(AbstractFlowCommand):
         parser.add_argument(
             "--cuda",
             action="store_true",
-            help="Use CUDA implementations where possible.",
+            help="Use CUDA implementation",
         )
 
     def main(self):

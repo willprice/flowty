@@ -9,10 +9,10 @@ parser = argparse.ArgumentParser(
 )
 command_parsers = parser.add_subparsers()
 
-tvl1.TvL1FlowCommand.register_command(command_parsers)
-brox.BroxFlowCommand.register_command(command_parsers)
-pyrlk.PyrLKFlowCommand.register_command(command_parsers)
-farneback.FarnebackFlowCommand.register_command(command_parsers)
+tvl1.TvL1Command.register_command(command_parsers)
+brox.BroxCommand.register_command(command_parsers)
+pyrlk.PyrLucasKanadeCommand.register_command(command_parsers)
+farneback.FarnebackCommand.register_command(command_parsers)
 vr.VariationalRefinementCommand.register_command(command_parsers)
 dis.DenseInverseSearchCommand.register_command(command_parsers)
 

@@ -4,7 +4,7 @@ import pytest
 from pytest import approx
 
 import flowty
-from flowty.algorithms.brox import BroxFlowCommand
+from flowty.algorithms.brox import BroxCommand
 from flowty.cv.cuda_optflow import CudaBroxOpticalFlow
 
 
@@ -31,9 +31,9 @@ class TestBroxFlowCommand:
     def get_flow_alg(self, str_args):
         parser = argparse.ArgumentParser()
         command_parsers = parser.add_subparsers()
-        BroxFlowCommand.register_command(command_parsers)
+        BroxCommand.register_command(command_parsers)
         args = parser.parse_args(str_args)
-        command = BroxFlowCommand(args)
+        command = BroxCommand(args)
         flow_alg = command.get_flow_algorithm(args)
         return flow_alg
 

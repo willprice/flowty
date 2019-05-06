@@ -7,7 +7,7 @@ from flowty.cv.optflow import FarnebackOpticalFlow
 from flowty.flow_command import AbstractFlowCommand
 
 
-class FarnebackFlowCommand(AbstractFlowCommand):
+class FarnebackCommand(AbstractFlowCommand):
     def get_flow_algorithm(self, args):
         if args.cuda:
             return CudaFarnebackOpticalFlow(
@@ -16,7 +16,7 @@ class FarnebackFlowCommand(AbstractFlowCommand):
                     args.fast_pyramids,
                     args.window_size,
                     args.iterations,
-                    args.poly_count,
+                    args.neighborhood_size,
                     args.poly_sigma
             )
         else:
@@ -26,7 +26,7 @@ class FarnebackFlowCommand(AbstractFlowCommand):
                     args.fast_pyramids,
                     args.window_size,
                     args.iterations,
-                    args.poly_count,
+                    args.neighborhood_size,
                     args.poly_sigma
             )
 
@@ -38,20 +38,30 @@ class FarnebackFlowCommand(AbstractFlowCommand):
             description="Compute Farneback optical flow",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        parser.set_defaults(command=FarnebackFlowCommand)
+        parser.set_defaults(command=FarnebackCommand)
         parser.add_argument("--scale-count", type=int, default=5,
-                            help="Number of scales in pyramid")
+                            help="Number of levels in the image pyramid (including "
+                                 "the original image). [1, infty)")
         parser.add_argument("--scale-factor", type=float, default=0.5,
-                            help="Scale between each image pyramid")
+                            help="Scale factor between each image pyramid level. "
+                                 "(0, 1)")
         parser.add_argument("--fast-pyramids", action='store_true')
-        parser.add_argument("--window-size", type=int, default=13)
-        parser.add_argument("--iterations", type=int, default=10)
-        parser.add_argument("--poly-count", type=int, default=5)
-        parser.add_argument("--poly-sigma", type=float, default=1.1)
+        parser.add_argument("--window-size", type=int, default=13,
+                            help="Averaging window size at each pyramid level. "
+                                 "Larger values increase noise robustness, but produce "
+                                 "a more blurred flow field. [1, infty)")
+        parser.add_argument("--iterations", type=int, default=10,
+                            help="Number of iterations at each pyramid level.")
+        parser.add_argument("--neighborhood-size", type=int, default=5,
+                            help="Size of pixel neighborhood used to find polynomial "
+                                 "expansion. [1, infty)")
+        parser.add_argument("--poly-sigma", type=float, default=1.1,
+                            help="Standard deviation of Gaussian used to smooth "
+                                 "derivatives")
         parser.add_argument(
             "--cuda",
             action="store_true",
-            help="Use CUDA implementations where possible.",
+            help="Use CUDA implementation",
         )
 
     def main(self):

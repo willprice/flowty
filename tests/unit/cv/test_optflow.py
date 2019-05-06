@@ -100,7 +100,7 @@ class TestFarnebackOpticalFlow(OpticalFlowAlgorithmTestBase):
         ("use_fast_pyramids", False),
         ("window_size", 13),
         ("iterations", 10),
-        ("poly_count", 5),
+        ("neighborhood_size", 5),
         ("poly_sigma", 1.1)
 
     ])

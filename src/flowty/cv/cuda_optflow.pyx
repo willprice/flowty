@@ -278,12 +278,12 @@ cdef class CudaFarnebackOpticalFlow:
                   bool fast_pyramids = False,
                   int window_size = 13,
                   int iterations = 10,
-                  int poly_count = 5,
+                  int neighborhood_size = 5,
                   double poly_sigma = 1.1,
                   ):
         self.alg = FarnebackOpticalFlow.create(scale_count, scale_factor,
                                                fast_pyramids, window_size,
-                                               iterations, poly_count, poly_sigma)
+                                               iterations, neighborhood_size, poly_sigma)
 
     def __call__(self, Mat reference, Mat target) -> Mat:
         cvtColor(<InputArray>reference.c_mat,
@@ -323,7 +323,7 @@ cdef class CudaFarnebackOpticalFlow:
         return deref(self.alg).getNumIters()
 
     @property
-    def poly_count(self) -> int:
+    def neighborhood_size(self) -> int:
         return deref(self.alg).getPolyN()
 
     @property
