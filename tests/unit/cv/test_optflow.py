@@ -62,41 +62,22 @@ class TestTvL1OpticalFlow(OpticalFlowAlgorithmTestBase):
     def get_flow_algorithm(self):
         return TvL1OpticalFlow()
 
-    def test_tau_property(self):
-        assert TvL1OpticalFlow().tau == 0.25
-
-    def test_lambda_property(self):
-        assert TvL1OpticalFlow().lambda_ == 0.15
-
-    def test_theta_propertys(self):
-        assert TvL1OpticalFlow().theta == 0.3
-
-    def test_epsilon_property(self):
-        assert TvL1OpticalFlow().epsilon == 0.01
-
-    def test_gamma_property(self):
-        assert TvL1OpticalFlow().gamma == 0.0
-
-    def test_scale_step_property(self):
-        assert TvL1OpticalFlow().scale_step == 0.8
-
-    def test_scale_count_property(self):
-        assert TvL1OpticalFlow().scale_count == 5
-
-    def test_warp_count_property(self):
-        assert TvL1OpticalFlow().warp_count == 5
-
-    def test_outer_iterations_property(self):
-        assert TvL1OpticalFlow().outer_iterations == 10
-
-    def test_inner_iterations_property(self):
-        assert TvL1OpticalFlow().inner_iterations == 30
-
-    def test_median_filtering_property(self):
-        assert TvL1OpticalFlow().median_filtering == 5
-
-    def test_use_initial_flow_property(self):
-        assert not TvL1OpticalFlow().use_initial_flow
+    @pytest.mark.parametrize("property,expected_value", [
+        ("tau", 0.25),
+        ("lambda_", 0.15),
+        ("theta", 0.3),
+        ("epsilon", 0.01),
+        ("gamma", 0.0),
+        ("scale_step", 0.8),
+        ("scale_count", 5),
+        ("warp_count", 5),
+        ("outer_iterations", 10),
+        ("inner_iterations", 30),
+        ("median_filtering", 5),
+        ("use_initial_flow", False)
+    ])
+    def test_property(self, property, expected_value):
+        assert getattr(self.get_flow_algorithm(), property) == expected_value
 
     def test_repr(self):
         assert repr(TvL1OpticalFlow()) == \
