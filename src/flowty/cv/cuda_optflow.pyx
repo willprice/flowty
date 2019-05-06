@@ -305,3 +305,31 @@ cdef class CudaFarnebackOpticalFlow:
         flow = Mat()
         self.flow_gpu.download(<OutputArray> flow.c_mat)
         return flow
+
+    @property
+    def scale_count(self) -> int:
+        return deref(self.alg).getNumLevels()
+
+    @property
+    def scale_factor(self) -> float:
+        return deref(self.alg).getPyrScale()
+
+    @property
+    def use_fast_pyramids(self) -> bool:
+        return deref(self.alg).getFastPyramids()
+
+    @property
+    def iterations(self) -> int:
+        return deref(self.alg).getNumIters()
+
+    @property
+    def poly_count(self) -> int:
+        return deref(self.alg).getPolyN()
+
+    @property
+    def poly_sigma(self) -> float:
+        return deref(self.alg).getPolySigma()
+
+    @property
+    def window_size(self) -> int:
+        return deref(self.alg).getWinSize()

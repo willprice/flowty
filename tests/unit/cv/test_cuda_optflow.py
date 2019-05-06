@@ -82,3 +82,17 @@ class TestCudaPyramidalLucasKanade(OpticalFlowAlgorithmTestBase):
 class TestCudaFarnebackOpticalFlow(OpticalFlowAlgorithmTestBase):
     def get_flow_algorithm(self):
         return CudaFarnebackOpticalFlow()
+
+    @pytest.mark.parametrize("property,expected_value", [
+        ("scale_count", 5),
+        ("scale_factor", 0.5),
+        ("use_fast_pyramids", False),
+        ("window_size", 13),
+        ("iterations", 10),
+        ("poly_count", 5),
+        ("poly_sigma", 1.1)
+
+    ])
+    def test_property(self, property, expected_value):
+        assert getattr(self.get_flow_algorithm(), property) == expected_value
+

@@ -197,6 +197,35 @@ cdef class FarnebackOpticalFlow:
                      flow.c_mat)
         return flow
 
+    @property
+    def scale_count(self) -> int:
+        return deref(self.alg).getNumLevels()
+
+    @property
+    def scale_factor(self) -> float:
+        return deref(self.alg).getPyrScale()
+
+    @property
+    def use_fast_pyramids(self) -> bool:
+        return deref(self.alg).getFastPyramids()
+
+    @property
+    def iterations(self) -> int:
+        return deref(self.alg).getNumIters()
+
+    @property
+    def poly_count(self) -> int:
+        return deref(self.alg).getPolyN()
+
+    @property
+    def poly_sigma(self) -> float:
+        return deref(self.alg).getPolySigma()
+
+    @property
+    def window_size(self) -> int:
+        return deref(self.alg).getWinSize()
+
+
 
 cdef class VariationalRefinementOpticalFlow:
     cdef Ptr[c_VariationalRefinement] alg
@@ -237,6 +266,29 @@ cdef class VariationalRefinementOpticalFlow:
                              <InputOutputArray> flow.c_mat)
         return flow
 
+    @property
+    def sor_iterations(self) -> int:
+        return deref(self.alg).getSorIterations()
+
+    @property
+    def fixed_point_iterations(self) -> int:
+        return deref(self.alg).getFixedPointIterations()
+
+    @property
+    def alpha(self) -> float:
+        return deref(self.alg).getAlpha()
+
+    @property
+    def delta(self) -> float:
+        return deref(self.alg).getDelta()
+
+    @property
+    def gamma(self) -> float:
+        return deref(self.alg).getGamma()
+
+    @property
+    def omega(self) -> float:
+        return deref(self.alg).getOmega()
 
 cdef class DenseInverseSearchOpticalFlow:
     cdef Ptr[c_DISOpticalFlow] alg
@@ -247,10 +299,41 @@ cdef class DenseInverseSearchOpticalFlow:
         'medium': PRESET_MEDIUM
     }
 
-    def __cinit__(self, str preset = 'ultrafast'):
+    def __cinit__(self, str preset = 'ultrafast',
+                  finest_scale=None,
+                  gradient_descent_iterations=None,
+                  patch_size=None,
+                  patch_stride=None,
+                  use_mean_normalization=None,
+                  use_spatial_propagation=None,
+                  alpha=None,
+                  delta=None,
+                  gamma=None,
+                  variational_refinement_iterations=None):
         print(preset)
         preset_int = self._preset_to_enum[preset.lower()]
         self.alg = c_DISOpticalFlow.create(preset_int)
+
+        if finest_scale is not None:
+            self.finest_scale = finest_scale
+        if gradient_descent_iterations is not None:
+            self.gradient_descent_iterations = gradient_descent_iterations
+        if patch_size is not None:
+            self.patch_size = patch_size
+        if patch_stride is not None:
+            self.patch_stride = patch_stride
+        if use_mean_normalization is not None:
+            self.use_mean_normalization = use_mean_normalization
+        if use_spatial_propagation is not None:
+            self.use_spatial_propagation = use_spatial_propagation
+        if alpha is not None:
+            self.alpha = alpha
+        if delta is not None:
+            self.delta = delta
+        if gamma is not None:
+            self.gamma = gamma
+        if variational_refinement_iterations is not None:
+            self.variational_refinement_iterations = variational_refinement_iterations
 
 
     def __call__(self, Mat reference, Mat target):
@@ -260,3 +343,84 @@ cdef class DenseInverseSearchOpticalFlow:
                      self.target,
                      flow.c_mat)
         return flow
+
+    @property
+    def finest_scale(self) -> int:
+        return deref(self.alg).getFinestScale()
+
+    @finest_scale.setter
+    def finest_scale(self, int finest_scale):
+        deref(self.alg).setFinestScale(finest_scale)
+
+    @property
+    def gradient_descent_iterations(self) -> int:
+        return deref(self.alg).getGradientDescentIterations()
+
+    @gradient_descent_iterations.setter
+    def gradient_descent_iterations(self, int iterations):
+        deref(self.alg).setGradientDescentIterations(iterations)
+
+    @property
+    def patch_size(self) -> int:
+        return deref(self.alg).getPatchSize()
+
+    @patch_size.setter
+    def patch_size(self, int patch_size):
+        deref(self.alg).setPatchSize(patch_size)
+
+    @property
+    def patch_stride(self) -> int:
+        return deref(self.alg).getPatchStride()
+
+    @patch_stride.setter
+    def patch_stride(self, int patch_stride):
+        deref(self.alg).setPatchStride(patch_stride)
+
+    @property
+    def use_mean_normalization(self) -> bool:
+        return deref(self.alg).getUseMeanNormalization()
+
+    @use_mean_normalization.setter
+    def use_mean_normalization(self, bool on):
+        deref(self.alg).setUseMeanNormalization(on)
+
+    @property
+    def use_spatial_propagation(self) -> bool:
+        return deref(self.alg).getUseSpatialPropagation()
+
+    @use_spatial_propagation.setter
+    def use_spatial_propagation(self, bool on):
+        deref(self.alg).setUseSpatialPropagation(on)
+
+    @property
+    def alpha(self) -> float:
+        return deref(self.alg).getVariationalRefinementAlpha()
+
+    @alpha.setter
+    def alpha(self, float alpha):
+        deref(self.alg).setVariationalRefinementAlpha(alpha)
+
+    @property
+    def delta(self) -> float:
+        return deref(self.alg).getVariationalRefinementDelta()
+
+    @delta.setter
+    def delta(self, float delta):
+        deref(self.alg).setVariationalRefinementDelta(delta)
+
+
+    @property
+    def gamma(self) -> float:
+        return deref(self.alg).getVariationalRefinementGamma()
+
+    @gamma.setter
+    def gamma(self, float gamma):
+        deref(self.alg).setVariationalRefinementGamma(gamma)
+
+    @property
+    def variational_refinement_iterations(self) -> int:
+        return deref(self.alg).getVariationalRefinementIterations()
+
+    @variational_refinement_iterations.setter
+    def variational_refinement_iterations(self, int iterations):
+        deref(self.alg).setVariationalRefinementIterations(iterations)

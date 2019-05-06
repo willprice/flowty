@@ -74,3 +74,21 @@ cdef extern from "opencv2/cudaoptflow.hpp" namespace "cv::cuda" nogil:
     cdef cppclass FarnebackOpticalFlow(DenseOpticalFlow):
         @staticmethod
         Ptr[FarnebackOpticalFlow] create(int, double, bool, int, int, int, double)
+
+        bool getFastPyramids()
+        int getFlags()
+        int getNumIters()
+        int getNumLevels()
+        int getPolyN()
+        double getPolySigma()
+        double getPyrScale()
+        int getWinSize()
+
+        void setFastPyramids(bool)
+        void setFlags(int)
+        void setNumIters(int)
+        void setNumLevels(int)
+        void setPolyN(int)
+        void setPolySigma(double)
+        void setPyrScale(double)
+        void setWinSize(int)

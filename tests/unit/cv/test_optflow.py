@@ -2,6 +2,8 @@ from abc import ABC
 
 import numpy as np
 from numpy.testing import assert_equal
+from pytest import approx
+
 from flowty.cv.optflow import TvL1OpticalFlow, FarnebackOpticalFlow, \
     DenseInverseSearchOpticalFlow, VariationalRefinementOpticalFlow
 from flowty.cv.core import Mat, CV_32FC2
@@ -92,15 +94,55 @@ class TestFarnebackOpticalFlow(OpticalFlowAlgorithmTestBase):
     def get_flow_algorithm(self):
         return FarnebackOpticalFlow()
 
+    @pytest.mark.parametrize("property,expected_value", [
+        ("scale_count", 5),
+        ("scale_factor", 0.5),
+        ("use_fast_pyramids", False),
+        ("window_size", 13),
+        ("iterations", 10),
+        ("poly_count", 5),
+        ("poly_sigma", 1.1)
+
+    ])
+    def test_property(self, property, expected_value):
+        assert getattr(self.get_flow_algorithm(), property) == expected_value
+
 
 class TestVariationalRefinementOpticalFlow(OpticalFlowAlgorithmTestBase):
     def get_flow_algorithm(self):
         return VariationalRefinementOpticalFlow()
+
+    @pytest.mark.parametrize("property,expected_value", [
+        ("fixed_point_iterations", 5),
+        ("sor_iterations", 5),
+        ("alpha", 20.0),
+        ("delta", 5.0),
+        ("gamma", 10.0),
+        ("omega", 1.6),
+    ])
+    def test_property(self, property, expected_value):
+        if isinstance(expected_value, float):
+            expected_value = approx(expected_value)
+        assert getattr(self.get_flow_algorithm(), property) == expected_value
 
 
 class TestDenseInverseSearchOpticalFlow(OpticalFlowAlgorithmTestBase):
     img_size = (128, 128)
 
     def get_flow_algorithm(self):
-        return DenseInverseSearchOpticalFlow()
+        return DenseInverseSearchOpticalFlow(preset='medium')
 
+    @pytest.mark.parametrize("property,expected_value", [
+        ("gradient_descent_iterations", 25),
+        ("finest_scale", 1),
+        ("patch_size", 8),
+        ("patch_stride", 3),
+        ("use_mean_normalization", True),
+        ("use_spatial_propagation", True),
+        ("alpha", 20.0),
+        ("delta", 5.0),
+        ("gamma", 10.0),
+        ("variational_refinement_iterations", 5),
+    ])
+    def test_property(self, property, expected_value):
+        assert getattr(self.get_flow_algorithm(), property) == expected_value
