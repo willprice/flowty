@@ -23,7 +23,6 @@ class TestCudaTvL1OpticalFlow(OpticalFlowAlgorithmTestBase):
     def get_flow_algorithm(self):
         return CudaTvL1OpticalFlow()
 
-
     @pytest.mark.parametrize("property,expected_value", [
         ("tau", 0.25),
         ("lambda_", 0.15),
