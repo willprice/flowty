@@ -27,5 +27,5 @@ $ docker run --rm --runtime=nvidia willprice/flowty
 $ docker run -it --rm \
   --runtime=nvidia \
   --mount type=bind,source=/path/to/media,target=/data \
-  willprice/flowty /data/video.mp4 /data/flow/{axis}/{index:05d}.jpg --cuda tvl1
+  willprice/flowty tvl1 /data/video.mp4 /data/flow/{axis}/{index:05d}.jpg --cuda
 ```
