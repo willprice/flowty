@@ -1,18 +1,19 @@
 # cython: language_level=3
+from pathlib import Path
 
 from cython.operator cimport dereference as deref
 from libcpp cimport bool
-from ..cv.c_core cimport Ptr, Mat as c_Mat, InputArray, OutputArray, \
+from libcpp.string cimport string
+from ..cv.c_core cimport Ptr, String, Mat as c_Mat, InputArray, OutputArray, \
     InputOutputArray, CV_32FC2, CV_32FC1
 from ..cv.c_imgproc cimport cvtColor, ColorConversionCodes
 from ..cv.core cimport Mat
-from ..cv.core import get_num_threads, set_num_threads
 from ..cv.c_optflow cimport DenseOpticalFlow as c_DenseOpticalFlow, \
      DualTVL1OpticalFlow as c_DualTVL1OpticalFlow, \
      FarnebackOpticalFlow as c_FarnebackOpticalFlow, \
      DISOpticalFlow as c_DISOpticalFlow, PRESET_ULTRAFAST, PRESET_FAST, PRESET_MEDIUM, \
      VariationalRefinement as c_VariationalRefinement, \
-     DenseRLOFOpticalFlow as c_DenseRLOFOpticalFlow
+     writeOpticalFlow, readOpticalFlow
 
 
 cdef compute_flow(Ptr[c_DenseOpticalFlow] algorithm,
@@ -424,3 +425,15 @@ cdef class DenseInverseSearchOpticalFlow:
     @variational_refinement_iterations.setter
     def variational_refinement_iterations(self, int iterations):
         deref(self.alg).setVariationalRefinementIterations(iterations)
+
+def read_flo(str path) -> Mat:
+    if isinstance(path, Path):
+        path = str(path)
+    cdef c_Mat flow = readOpticalFlow(String(<string> path.encode('utf8')))
+    return Mat.from_mat(flow, copy=True)
+
+def write_flo(Mat flow, path):
+    if isinstance(path, Path):
+        path = str(path)
+    return writeOpticalFlow(String(<string> path.encode('utf8')), <InputArray>
+    flow.c_mat)

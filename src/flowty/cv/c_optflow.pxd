@@ -1,6 +1,6 @@
 # cython: language_level = 3
 from libcpp cimport bool
-from .c_core cimport Ptr, InputArray, InputOutputArray
+from .c_core cimport Ptr, InputArray, InputOutputArray, String, Mat
 
 
 cdef extern from "opencv2/video/tracking.hpp" namespace "cv" nogil:
@@ -74,13 +74,14 @@ cdef extern from "opencv2/video/tracking.hpp" namespace "cv" nogil:
         void setOmega(float)
         void setSorIterations(int)
 
+    bool writeOpticalFlow(String&, InputArray)
+    Mat readOpticalFlow(String&)
 
 cdef extern from "opencv2/video/tracking.hpp" namespace "cv::DISOpticalFlow":
         enum:
             PRESET_ULTRAFAST
             PRESET_FAST
             PRESET_MEDIUM
-
 
 cdef extern from "opencv2/optflow.hpp" namespace "cv::optflow" nogil:
     cdef cppclass DualTVL1OpticalFlow(DenseOpticalFlow):

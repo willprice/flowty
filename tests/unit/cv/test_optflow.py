@@ -1,11 +1,11 @@
 from abc import ABC
 
 import numpy as np
-from numpy.testing import assert_equal
+from numpy.testing import assert_equal, assert_array_equal
 from pytest import approx
 
 from flowty.cv.optflow import TvL1OpticalFlow, FarnebackOpticalFlow, \
-    DenseInverseSearchOpticalFlow, VariationalRefinementOpticalFlow
+    DenseInverseSearchOpticalFlow, VariationalRefinementOpticalFlow, read_flo, write_flo
 from flowty.cv.core import Mat, CV_32FC2
 import pytest
 
@@ -146,3 +146,17 @@ class TestDenseInverseSearchOpticalFlow(OpticalFlowAlgorithmTestBase):
     ])
     def test_property(self, property, expected_value):
         assert getattr(self.get_flow_algorithm(), property) == expected_value
+
+
+def test_read_write_flo(tmpdir):
+    flow_path = str(tmpdir / 'test.flo')
+    rows = 20
+    cols = 30
+    channels = 2
+    flow_np = (np.random.rand(rows, cols, channels) * 20).astype(np.float32)
+    flow = Mat.fromarray(flow_np, copy=True)
+
+    write_flo(flow, flow_path)
+    flow2 = np.array(read_flo(flow_path))
+
+    assert_array_equal(flow2, flow)

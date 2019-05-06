@@ -2,6 +2,7 @@
 from libcpp cimport bool
 from libcpp.vector cimport vector
 from libcpp.memory cimport shared_ptr
+from libcpp.string cimport string
 
 
 cdef extern from "opencv2/core.hpp" nogil:
@@ -105,6 +106,13 @@ cdef extern from "opencv2/core.hpp" namespace "cv" nogil:
         unsigned char* datastart
         unsigned char* dataend
         int cols, rows, flags, dims
+
+    cdef cppclass String:
+        String(String&)
+        String(String&, size_t, size_t)
+        String(char *)
+        String(char *, size_t)
+        String(string&) except +
 
     int getNumThreads()
     void setNumThreads(int)
