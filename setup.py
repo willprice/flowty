@@ -60,7 +60,7 @@ extensions = [
 ]
 
 docs_require = ["sphinx"]
-tests_require = ["pytest"]
+tests_require = ["pytest", "imageio"]
 
 setup(
     name=about["__title__"],

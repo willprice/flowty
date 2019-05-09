@@ -1,47 +1,25 @@
-import sys
-from io import StringIO
+from pathlib import Path
+import numpy as np
+from imageio import imread
 
-from unittest.mock import Mock
-
-from flowty.flowty import main, command_parsers
-
-
-class IOCapture:
-    def __init__(self):
-        self._original_stdout = sys.stdout
-        self._original_stderr = sys.stderr
-        self._stdout = StringIO()
-        self._stderr = StringIO()
-
-    def __enter__(self):
-        sys.stdout = self._stdout
-        sys.stderr = self._stderr
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        sys.stdout = self._original_stdout
-        sys.stderr = self._original_stderr
-
-    @property
-    def stdout(self):
-        return self._stdout.getvalue()
-
-    @property
-    def stderr(self):
-        return self._stderr.getvalue()
+from flowty import flowty
+from tests.resources import RUBBER_WHALE
 
 
-class TestFlowtyCli:
-    def test_prints_help_when_no_command_is_provided(self):
-        with IOCapture() as capture:
-            main([])
-            assert 'usage: flowty' in capture.stdout
+class TestFlowty:
+    def test_tvl1_flow_from_mp4_to_uv_images(self, tmpdir):
+        src = RUBBER_WHALE['media_path']['png']
+        output_dir = tmpdir / 'flow'
+        dest = output_dir / '{axis}' / 'frame{index:02d}.png'
+        stride = 2
 
-    def test_invokes_registered_command(self):
-        tvl1_parser = command_parsers.add_parser('tvl1')
-        tvl1_command = Mock()
-        tvl1_parser.set_defaults(command=tvl1_command)
+        flowty.main(["dis", "--video-stride", str(stride), str(src), str(dest)])
 
-        main(['tvl1'])
-
-        tvl1_command.assert_called_once()
+        for axis in ['u', 'v']:
+            for i in range(1, RUBBER_WHALE['frame_count'] // stride):
+                flow_frame_path = Path(output_dir / axis / 'frame{:02d}.png'.format(i))
+                assert flow_frame_path.exists()
+                flow_frame = imread(flow_frame_path)
+                assert flow_frame.shape == RUBBER_WHALE['resolution']
+                assert flow_frame.dtype == np.uint8
+            assert not Path(output_dir / axis / 'frame{:02d}.png'.format( RUBBER_WHALE['frame_count'])).exists()
