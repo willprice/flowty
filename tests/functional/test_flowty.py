@@ -3,7 +3,7 @@ import numpy as np
 from imageio import imread
 
 from flowty import flowty
-from tests.resources import RUBBER_WHALE
+from ..resources import RUBBER_WHALE
 
 
 class TestFlowty:

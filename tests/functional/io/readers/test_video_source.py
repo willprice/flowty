@@ -1,5 +1,5 @@
 from flowty.cv.videoio import VideoSource
-from tests.resources import VIDEO_PATHS
+from ....resources import VIDEO_PATHS
 
 
 class TestVideoSource:
