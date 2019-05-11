@@ -41,6 +41,7 @@ def cython_extension(
         pyx_file[len("src/"):-len(".pyx")].replace("/", "."),
         sources=[pyx_file],
         language="c++",
+        libraries=["stdc++"],
         include_dirs=[np.get_include(), *include_dirs],
         extra_compile_args=opencv_cflags + extra_compile_args,
         extra_link_args=opencv_libs + extra_link_args,
