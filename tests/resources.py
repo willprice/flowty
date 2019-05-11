@@ -2,6 +2,7 @@ from pathlib import Path
 
 
 MEDIA_ROOT = Path(__file__).parent.parent / 'media'
+GOLD_DIR = Path(__file__).parent / 'data'
 VIDEO_PATHS = {
     'mp4': str(MEDIA_ROOT / 'mr-bubz.mp4'),
     'webm': str(MEDIA_ROOT / 'mr-bubz.webm'),
