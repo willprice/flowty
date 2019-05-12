@@ -24,7 +24,7 @@ class TestTvL1FlowCommand:
         ("median-filtering", "median_filtering", 2),
     ])
     def test_cpu_args(self, arg, attr, value):
-        str_args = ["tvl1", "src", "dest", "--{}".format(arg), str(value)]
+        str_args = ["tvl1", "src", "flow/{axis}/frame_{index:05d}.jpg", "--{}".format(arg), str(value)]
 
         flow_alg = self.get_flow_alg(str_args)
 
@@ -54,7 +54,7 @@ class TestTvL1FlowCommand:
         ("scale-step", "scale_step", 0.7),
     ])
     def test_gpu_args(self, arg, attr, value):
-        str_args = ["tvl1", "src", "dest", "--{}".format(arg), str(value), "--cuda"]
+        str_args = ["tvl1", "src", "flow/{axis}/frame_{index:05d}.jpg", "--{}".format(arg), str(value), "--cuda"]
 
         flow_alg = self.get_flow_alg(str_args)
 
@@ -67,7 +67,7 @@ class TestTvL1FlowCommand:
     def test_gpu_iterations(self):
         inner_iterations = 20
         outer_iterations = 30
-        str_args = ["tvl1", "src", "dest", "--inner-iterations", str(inner_iterations),
+        str_args = ["tvl1", "src", "flow/{axis}/frame_{index:05d}.jpg", "--inner-iterations", str(inner_iterations),
                     "--outer-iterations", str(outer_iterations), "--cuda"]
 
         flow_alg = self.get_flow_alg(str_args)
@@ -77,7 +77,7 @@ class TestTvL1FlowCommand:
 
     @pytest.mark.skipif('not flowty.cuda_available')
     def test_median_filtering_on_gpu_raises_error(self):
-        str_args = ["tvl1", "src", "dest", "--median-filtering", "3", "--cuda"]
+        str_args = ["tvl1", "src", "flow/{axis}/frame_{index:05d}.jpg", "--median-filtering", "3", "--cuda"]
 
         with pytest.raises(ValueError):
             self.get_flow_alg(str_args)
@@ -86,4 +86,4 @@ class TestTvL1FlowCommand:
         with monkeypatch.context() as ctx:
             ctx.setattr(flowty, "cuda_available", False)
             with pytest.raises(RuntimeError):
-                self.get_flow_alg(["tvl1", "src", "dest", "--cuda"])
+                self.get_flow_alg(["tvl1", "src", "flow/{axis}/frame_{index:05d}.jpg", "--cuda"])

@@ -21,7 +21,7 @@ class TestVariationalRefinmentCommand:
     )
     def test_args(self, arg, attr, value):
         str_args = (
-            ["vr", "src", "dest", "--{}".format(arg)]
+            ["vr", "src", "flow/{axis}/frame_{index:05d}.jpg", "--{}".format(arg)]
             + ([str(value)] if value is not None else [])
         )
 

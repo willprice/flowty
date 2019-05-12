@@ -31,7 +31,7 @@ class TestDenseInverseSearchCommand:
         else:
             cli_value = value
             instance_value = value
-        str_args = ["dis", "src", "dest", "--preset", "medium", "--{}".format(arg)] + (
+        str_args = ["dis", "src", "flow/{axis}/frame_{index:05d}.jpg", "--preset", "medium", "--{}".format(arg)] + (
             [str(cli_value)] if cli_value is not None else []
         )
 
