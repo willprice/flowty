@@ -30,6 +30,14 @@ class TestGetFlowWriter:
 
 
 class TestFlowUVImageWriter:
+    def test_throws_error_if_template_missing_axis_field(self):
+        with pytest.raises(ValueError):
+            FlowUVImageWriter('flow/{index:05d}.jpg')
+
+    def test_throws_error_if_template_missing_index_field(self):
+        with pytest.raises(ValueError):
+            FlowUVImageWriter('flow/{axis}/frame.jpg')
+
     def test_saving_single_flow_image(self, tmp_path):
         image_writer = self.get_flow_writer(tmp_path)
         flow = np.random.uniform(low=-20, high=20, size=(5, 5, 2))
@@ -58,6 +66,10 @@ class TestFlowUVImageWriter:
 
 
 class TestFlowNumpyWriter:
+    def test_throws_error_if_template_missing_index_field(self):
+        with pytest.raises(ValueError):
+            FlowNumpyWriter("flow/frame.jpg")
+
     def test_saving_single_flow_field(self, tmp_path):
         writer = self.get_flow_writer(tmp_path)
 
