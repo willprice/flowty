@@ -36,10 +36,6 @@ class TestVideoSource:
         src = VideoSource(VIDEO_PATHS['jpeg'], backend='images')
         assert self.expected_shape == next(src).shape
 
-    def test_gstreamer_backend(self):
-        src = VideoSource(VIDEO_PATHS['mp4'], backend='gstreamer')
-        assert self.expected_shape == next(src).shape
-
     def test_pos_ms_property(self):
         assert 0 == self.get_ffmpeg_src().pos_ms
 
