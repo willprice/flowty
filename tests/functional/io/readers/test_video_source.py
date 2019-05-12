@@ -1,3 +1,5 @@
+import pytest
+
 from flowty.cv.videoio import VideoSource
 from ....resources import VIDEO_PATHS
 
@@ -58,6 +60,10 @@ class TestVideoSource:
 
     def test_backend_property(self):
         assert 'ffmpeg' == self.get_ffmpeg_src().backend
+
+    def test_raises_error_if_video_dosent_exist(self):
+        with pytest.raises(RuntimeError):
+            VideoSource('/tmp/invalid-video.mp4')
 
     def get_ffmpeg_src(self):
         return VideoSource(VIDEO_PATHS['mp4'], backend='ffmpeg')
