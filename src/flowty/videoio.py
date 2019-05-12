@@ -1,9 +1,15 @@
 import argparse
+import string
 from pathlib import Path
 import numpy as np
 
 from flowty.imgproc import quantise_flow
 from .cv.imgcodecs import imwrite
+
+
+def parse_template_fields(str_template):
+    return {field for (_, field, _, _) in string.Formatter().parse(
+            str_template)}
 
 
 def get_flow_writer(args: argparse.Namespace):
@@ -22,6 +28,11 @@ def get_flow_writer(args: argparse.Namespace):
 
 class FlowUVImageWriter:
     def __init__(self, file_path_template: str, bound=20):
+        template_fields = parse_template_fields(file_path_template)
+        if 'axis' not in template_fields:
+            raise ValueError("Missing '{axis}' substitution in output template")
+        if 'index' not in template_fields:
+            raise ValueError("Missing '{index}' substitution in output template")
         self.file_path_template = file_path_template
         self.frame_index = 1
         self.bound = bound
@@ -53,6 +64,8 @@ class FlowUVImageWriter:
 
 class FlowNumpyWriter:
     def __init__(self, file_path_template: str):
+        if 'index' not in parse_template_fields(file_path_template):
+            raise ValueError("Missing '{index}' substitution in output template")
         self.file_path_template = file_path_template
         self.frame_index = 1
 

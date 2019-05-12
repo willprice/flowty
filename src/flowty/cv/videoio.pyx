@@ -1,4 +1,5 @@
 # cython: language_level=3
+import os
 from typing import Iterator, Optional
 
 from libcpp.string cimport string
@@ -52,6 +53,8 @@ cdef class VideoSource:
         VideoCapture c_cap
 
     def __cinit__(self, str file_path, str backend = "ffmpeg"):
+        if '%' not in file_path and not os.path.exists(file_path):
+            raise RuntimeError("{} doesnt exist".format(file_path))
         cdef string cpp_file_path = file_path.encode('UTF-8')
         cdef int backend_enum = _backend_lookup[backend.lower()]
         self.c_cap = VideoCapture(cpp_file_path, backend_enum)
