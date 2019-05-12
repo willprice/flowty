@@ -18,7 +18,7 @@ class TestPyramidalLucasKanadeCommand:
     )
     def test_args(self, arg, attr, value):
         str_args = (
-            ["pyrlk", "src", "dest", "--{}".format(arg)]
+            ["pyrlk", "src", "flow/{axis}/frame_{index:05d}.jpg", "--{}".format(arg)]
             + ([str(value)] if value is not None else [])
         )
 

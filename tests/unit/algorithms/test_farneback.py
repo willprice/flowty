@@ -27,7 +27,7 @@ class TestFarnebackCommand:
             cli_value = value
             instance_value = value
         str_args = (
-            ["farneback", "src", "dest", "--{}".format(arg)]
+            ["farneback", "src", "flow/{axis}/frame_{index:05d}.jpg", "--{}".format(arg)]
             + ([str(cli_value)] if cli_value is not None else [])
         )
 
@@ -49,7 +49,7 @@ class TestFarnebackCommand:
             cli_value = value
             instance_value = value
         str_args = (
-                ["farneback", "src", "dest", "--{}".format(arg)]
+                ["farneback", "src", "flow/{axis}/frame_{index:05d}.jpg", "--{}".format(arg)]
                 + ([str(cli_value)] if cli_value is not None else [])
                 + ["--cuda"]
         )

@@ -19,7 +19,7 @@ class TestBroxFlowCommand:
         ("scale-factor", "scale_factor", 0.5),
     ])
     def test_cpu_args(self, arg, attr, value):
-        str_args = ["brox", "src", "dest", "--{}".format(arg), str(value)]
+        str_args = ["brox", "src", "flow/{axis}/frame_{index:05d}.jpg", "--{}".format(arg), str(value)]
 
         flow_alg = self.get_flow_alg(str_args)
 
@@ -41,5 +41,5 @@ class TestBroxFlowCommand:
         with monkeypatch.context() as ctx:
             ctx.setattr(flowty, "cuda_available", False)
             with pytest.raises(RuntimeError):
-                self.get_flow_alg(["brox", "src", "dest"])
+                self.get_flow_alg(["brox", "src", "flow/{axis}/frame_{index:05d}.jpg"])
 

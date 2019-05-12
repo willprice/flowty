@@ -9,7 +9,7 @@ flow_method_base_parser.add_argument(
 )
 flow_method_base_parser.add_argument(
     "dest",
-    type=Path,
+    type=str,
     help="Path to video output, e.g. /data/flow/{axis}/frame_{:06d}.jpg",
 )
 flow_method_base_parser.add_argument(
