@@ -1,7 +1,10 @@
 # cython: language_level=3
 from pathlib import Path
+from typing import Union
 
 from cython.operator cimport dereference as deref
+import numpy as np
+cimport numpy as np
 from libcpp cimport bool
 from libcpp.string cimport string
 from ..cv.c_core cimport Ptr, String, Mat as c_Mat, InputArray, OutputArray, \
@@ -432,8 +435,29 @@ def read_flo(str path) -> Mat:
     cdef c_Mat flow = readOpticalFlow(String(<string> path.encode('utf8')))
     return Mat.from_mat(flow, copy=True)
 
-def write_flo(Mat flow, path):
+def write_flo(flow, path) -> None:
     if isinstance(path, Path):
         path = str(path)
-    return writeOpticalFlow(String(<string> path.encode('utf8')), <InputArray>
-    flow.c_mat)
+    if isinstance(flow, np.ndarray):
+        ok = _write_flo_np(flow, path)
+    elif isinstance(flow, Mat):
+        ok = _write_flo_mat(flow, path)
+    if not ok:
+        raise RuntimeError("Unable to write flow to {}".format(path))
+
+def _write_flo_mat(Mat flow, str path):
+    return writeOpticalFlow(String(<string> path.encode('utf8')),
+                            <InputArray> flow.c_mat)
+
+def _write_flo_np(flow, str path):
+    if flow.dtype != np.float32:
+        flow = flow.astype(np.float32)
+    if flow.ndim != 3:
+        raise ValueError("Expected 3 dimensional array but had shape: {}".format(
+                flow.shape))
+    if flow.shape[-1] != 2:
+        raise ValueError("Expected 2 channel image, but was {} channel".format(
+                flow.shape[-1]))
+    cdef Mat flow_mat = Mat.fromarray(flow)
+    return writeOpticalFlow(String(<string> path.encode('utf8')),
+                            <InputArray> flow_mat.c_mat)
