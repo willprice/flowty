@@ -8,7 +8,7 @@ def quantise_flow(flow: np.ndarray, bound: float = 20) -> np.ndarray:
         bound: Max value of flow (and -bound is min value), values above this
             are clipped.
     """
-    np.clip(flow, -bound, bound, out=flow)
+    flow = np.clip(flow, -bound, bound)
     flow_range = 2 * bound
     flow += bound
     flow *= (255 / flow_range)
