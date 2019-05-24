@@ -19,7 +19,7 @@ from flowty.videoio import (
 class TestGetFlowWriter:
     @pytest.mark.parametrize("extension", ["jpg", "jpeg", "JPEG", "png", "PNG"])
     def test_image_extensions_returns_flow_uv_writer(self, extension):
-        writer = get_flow_writer(self.create_args(extension))
+        writer = get_flow_writer(self.create_args(extension, bound=25))
         assert isinstance(writer, FlowUVImageWriter)
 
     @pytest.mark.parametrize("extension", ["npy", "np", "NPY"])
@@ -35,8 +35,14 @@ class TestGetFlowWriter:
         with pytest.raises(ValueError):
             get_flow_writer(self.create_args("asdf"))
 
-    def create_args(self, extension: str) -> argparse.Namespace:
-        args = argparse.Namespace()
+    def test_bound_set_in_uv_flow_writer(self):
+        bound = 25
+        writer = get_flow_writer(self.create_args('jpg', bound=bound))
+        assert isinstance(writer, FlowUVImageWriter)
+        assert writer.bound == bound
+
+    def create_args(self, extension: str, **namespace_kwargs) -> argparse.Namespace:
+        args = argparse.Namespace(**namespace_kwargs)
         args.dest = "path/{axis}/frame_{index:05d}." + extension
         return args
 

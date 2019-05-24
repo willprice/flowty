@@ -33,5 +33,6 @@ flow_method_base_parser.add_argument(
     "e.g. set to 2 to to compute flow between frames n and n + 2.",
 )
 flow_method_base_parser.add_argument(
-    "--bound", default=20, help="Max magnitude of flow, values above this are clipped."
+    "--bound", default=20, type=float,
+        help="Max magnitude of flow, values above this are clipped."
 )
