@@ -14,14 +14,17 @@ def parse_template_fields(str_template):
 
 def get_flow_writer(args: argparse.Namespace):
     extension_writer_map = [
-        (["jpeg", "jpg", "png"], FlowUVImageWriter),
-        (["np", "npy"], FlowNumpyWriter),
-        (["flo"], MiddleburyFlowWriter),
+        (
+            ["jpeg", "jpg", "png"],
+            lambda args: FlowUVImageWriter(args.dest, bound=args.bound),
+        ),
+        (["np", "npy"], lambda args: FlowNumpyWriter(args.dest)),
+        (["flo"], lambda args: MiddleburyFlowWriter(args.dest)),
     ]
     for extensions, writer_cls in extension_writer_map:
         for extension in extensions:
             if args.dest.lower().endswith("." + extension):
-                return writer_cls(args.dest)
+                return writer_cls(args)
     else:
         raise ValueError("Unable to retrieve flow writer for '{}'".format(args.dest))
 
