@@ -70,7 +70,7 @@ setup(
     ext_modules=extensions,
     packages=find_packages('src') + ['flowty.algorithms'],
     package_dir={'': 'src'},
-    install_requires=["numpy"],
+    install_requires=["numpy", "tqdm"],
     extras_require={
         "docs": docs_require,
         "test": tests_require,

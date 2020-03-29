@@ -2,6 +2,8 @@ import time
 from collections import deque
 from typing import Iterator
 
+from tqdm import tqdm
+
 from flowty.cv import Mat
 
 
@@ -35,9 +37,14 @@ class FlowPipe:
         assert len(frame_queue) == self.dilation
 
         t = time.time()
-        for i, target in enumerate(frame_iter):
-            data_load_time = time.time() - t
-            print("Data time (ms): ", data_load_time * 1e3)
+        try:
+            total = int(self.src.frame_count)
+        except AttributeError:
+            total = None
+
+        pbar = tqdm(enumerate(frame_iter), total=total, dynamic_ncols=True)
+        for i, target in pbar:
+            data_load_time = (time.time() - t) * 1e3
             reference = frame_queue.popleft()
             frame_queue.append(target)
             assert len(frame_queue) == self.dilation
@@ -45,12 +52,13 @@ class FlowPipe:
                 t = time.time()
                 flow = self.flow_algorithm(reference, target)
                 flow_time = (time.time() - t) * 1e3
-                print("Flow time (ms): ", flow_time)
 
                 t = time.time()
                 self.write_flow(flow)
                 write_time = (time.time() - t) * 1e3
-                print("Write time (ms): ", write_time)
+                pbar.set_description("read: {:.2f}ms, compute: {:.2f}ms, write: {:.2f}ms".format(
+                        data_load_time, flow_time, write_time
+                ))
             t = time.time()
 
     def write_flow(self, flow: Mat) -> None:
