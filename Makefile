@@ -26,7 +26,7 @@ venv: .venv
 .PHONY: check test
 test: check
 check: build
-	pytest tests
+	$(PYTHON) -m pytest tests
 
 .PHONY: docs
 docs: 
