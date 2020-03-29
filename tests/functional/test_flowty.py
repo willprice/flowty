@@ -8,7 +8,7 @@ from ..resources import GOLD_DIR, RUBBER_WHALE
 
 
 class TestFlowty:
-    def test_tvl1_flow_from_mp4_to_uv_images(self, tmpdir):
+    def test_dis_flow_from_mp4_to_uv_images(self, tmpdir):
         src = RUBBER_WHALE["media_path"]["png"]
         output_dir = tmpdir / "flow"
         dest = output_dir / "{axis}" / "frame{index:02d}.png"
