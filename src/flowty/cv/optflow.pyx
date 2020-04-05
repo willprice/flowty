@@ -7,11 +7,11 @@ import numpy as np
 cimport numpy as np
 from libcpp cimport bool
 from libcpp.string cimport string
-from ..cv.c_core cimport Ptr, String, Mat as c_Mat, InputArray, OutputArray, \
+from .c_core cimport Ptr, String, Mat as c_Mat, InputArray, OutputArray, \
     InputOutputArray, CV_32FC2, CV_32FC1
-from ..cv.c_imgproc cimport cvtColor, ColorConversionCodes
-from ..cv.core cimport Mat
-from ..cv.c_optflow cimport DenseOpticalFlow as c_DenseOpticalFlow, \
+from .c_imgproc cimport cvtColor, ColorConversionCodes
+from .core cimport Mat
+from .c_optflow cimport DenseOpticalFlow as c_DenseOpticalFlow, \
      DualTVL1OpticalFlow as c_DualTVL1OpticalFlow, \
      FarnebackOpticalFlow as c_FarnebackOpticalFlow, \
      DISOpticalFlow as c_DISOpticalFlow, PRESET_ULTRAFAST, PRESET_FAST, PRESET_MEDIUM, \
@@ -433,7 +433,7 @@ def read_flo(str path) -> Mat:
     if isinstance(path, Path):
         path = str(path)
     cdef c_Mat flow = readOpticalFlow(String(<string> path.encode('utf8')))
-    return Mat.from_mat(flow, copy=True)
+    return Mat.from_mat(flow)
 
 def write_flo(flow, path) -> None:
     if isinstance(path, Path):
