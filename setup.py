@@ -27,6 +27,7 @@ opencv_cflags = get_cli_output("pkg-config --cflags opencv4").split()
 def cython_extension(
     pyx_file,
     language="c++",
+    name=None,
     include_dirs=None,
     extra_compile_args=None,
     extra_link_args=None,
@@ -37,8 +38,10 @@ def cython_extension(
         extra_compile_args = []
     if extra_link_args is None:
         extra_link_args = []
+    if name is None:
+        name = pyx_file[len("src/"):-len(".pyx")].replace("/", ".")
     return Extension(
-        pyx_file[len("src/"):-len(".pyx")].replace("/", "."),
+        name,
         sources=[pyx_file],
         language="c++",
         libraries=["stdc++"],
@@ -63,60 +66,61 @@ extensions = [
 docs_require = ["sphinx"]
 tests_require = ["pytest", "imageio"]
 
-setup(
-    name=about["__title__"],
-    description=about["__description__"],
-    version=about["__version__"],
-    ext_modules=extensions,
-    packages=find_packages('src') + ['flowty.algorithms'],
-    package_dir={'': 'src'},
-    install_requires=["numpy", "tqdm"],
-    extras_require={
-        "docs": docs_require,
-        "test": tests_require,
-        "dev": tests_require + docs_require,
-    },
-    # Include package data specified in MANIFEST.in
-    include_package_data=True,
-    classifiers=[
-        # How mature is this project? Common values
-        # are
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
-        "Development Status :: 3 - Alpha",
-        "Intended Audience :: Developers",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-    ],
-    entry_points={
-        'console_scripts': ['flowty=flowty.flowty:main']
-    },
-    keywords=[
-        "computer-vision",
-        "optical-flow",
-        "optical",
-        "flow",
-        "computer",
-        "vision",
-        "opencv",
-        "cython",
-        "cuda",
-        "gpu",
-        "tvl1",
-        "farneback",
-        "brox",
-        "flowty",
-    ],
-    author=about["__author__"],
-    author_email=about["__author_email__"],
-    license=about["__license__"],
-    url="http://github.com/willprice/flowty",
-    project_urls={
-        "Bug Tracker": "https://github.com/willprice/flowty/issues",
-        "Documentation": "https://flowty.readthedocs.io",
-        "Source Code": "http://github.com/willprice/flowty",
-    },
-    zip_safe=False
-)
+if __name__ == '__main__':
+    setup(
+        name=about["__title__"],
+        description=about["__description__"],
+        version=about["__version__"],
+        ext_modules=extensions,
+        packages=find_packages('src') + ['flowty.algorithms'],
+        package_dir={'': 'src'},
+        install_requires=["numpy", "tqdm"],
+        extras_require={
+            "docs": docs_require,
+            "test": tests_require,
+            "dev": tests_require + docs_require,
+        },
+        # Include package data specified in MANIFEST.in
+        include_package_data=True,
+        classifiers=[
+            # How mature is this project? Common values
+            # are
+            #   3 - Alpha
+            #   4 - Beta
+            #   5 - Production/Stable
+            "Development Status :: 3 - Alpha",
+            "Intended Audience :: Developers",
+            "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
+        ],
+        entry_points={
+            'console_scripts': ['flowty=flowty.flowty:main']
+        },
+        keywords=[
+            "computer-vision",
+            "optical-flow",
+            "optical",
+            "flow",
+            "computer",
+            "vision",
+            "opencv",
+            "cython",
+            "cuda",
+            "gpu",
+            "tvl1",
+            "farneback",
+            "brox",
+            "flowty",
+        ],
+        author=about["__author__"],
+        author_email=about["__author_email__"],
+        license=about["__license__"],
+        url="http://github.com/willprice/flowty",
+        project_urls={
+            "Bug Tracker": "https://github.com/willprice/flowty/issues",
+            "Documentation": "https://flowty.readthedocs.io",
+            "Source Code": "http://github.com/willprice/flowty",
+        },
+        zip_safe=False
+    )

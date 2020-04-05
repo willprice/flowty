@@ -106,6 +106,11 @@ cdef extern from "opencv2/core.hpp" namespace "cv" nogil:
         unsigned char* datastart
         unsigned char* dataend
         int cols, rows, flags, dims
+        UMatData* u
+
+    cdef cppclass UMatData:
+        int refcount
+        int urefcount
 
     cdef cppclass String:
         String(String&)

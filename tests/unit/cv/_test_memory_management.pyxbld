@@ -1,0 +1,3 @@
+def make_ext(modname, pyxfilename):
+    from setup import cython_extension
+    return cython_extension(name=modname, pyx_file=pyxfilename)
