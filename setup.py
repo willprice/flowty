@@ -64,7 +64,7 @@ extensions = [
 ]
 
 docs_require = ["sphinx"]
-tests_require = ["pytest", "imageio"]
+tests_require = ["pytest", "imageio", "cython"]
 
 if __name__ == '__main__':
     setup(
