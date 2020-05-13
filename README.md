@@ -4,6 +4,10 @@
 [![Docker image size](https://images.microbadger.com/badges/image/willprice/flowty.svg)](https://microbadger.com/images/willprice/flowty)
 [![Read the Docs](https://img.shields.io/readthedocs/flowty.svg)](https://flowty.rtfd.org)
 
+## WARNING
+
+Currently Flowty is built atop of OpenCV 4 which has a serious performance regression in (at least) TVL1 optical flow which makes it inpractical to use. I suggest using my other optical flow tool [furnari-flow](https://github.com/dl-container-registry/furnari-flow) until this has been resolved. I have a [benchmark repository](https://github.com/willprice/opencv-tvl1-performance-regression-demo) demoing this issue and have filed a [bug report](https://github.com/opencv/opencv_contrib/issues/2459). Until that is resolved I suggest you try out multiple tools and pick which ever you find most performant.
+
 
 Flowty is the swiss army knife of computing optical flow. Flowty is...
 
